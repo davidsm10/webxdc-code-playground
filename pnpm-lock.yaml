@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@codemirror/autocomplete':
+        specifier: ^6.19.1
+        version: 6.19.1
       '@codemirror/lang-css':
         specifier: ^6.3.1
         version: 6.3.1
@@ -23,9 +26,21 @@ importers:
       '@lucide/svelte':
         specifier: ^0.553.0
         version: 0.553.0(svelte@5.43.6)
+      '@typescript/vfs':
+        specifier: ^1.6.2
+        version: 1.6.2(typescript@5.9.3)
+      '@valtown/codemirror-ts':
+        specifier: ^2.3.1
+        version: 2.3.1(@codemirror/autocomplete@6.19.1)(@codemirror/lint@6.9.2)(@codemirror/state@6.5.2)(@codemirror/view@6.38.7)
+      '@webxdc/types':
+        specifier: ^2.1.2
+        version: 2.1.2
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
+      comlink:
+        specifier: ^4.4.2
+        version: 4.4.2
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -38,6 +53,9 @@ importers:
       svelte-codemirror-editor:
         specifier: ^2.1.0
         version: 2.1.0(codemirror@6.0.2)(svelte@5.43.6)
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.1
@@ -48,18 +66,12 @@ importers:
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.1
-      '@webxdc/types':
-        specifier: ^2.1.2
-        version: 2.1.2
       '@webxdc/vite-plugins':
         specifier: ^1.6.0
         version: 1.6.0(terser@5.44.1)(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1))
       svelte-check:
         specifier: ^4.3.3
         version: 4.3.4(picomatch@4.0.3)(svelte@5.43.6)(typescript@5.9.3)
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
       vite:
         specifier: ^7.2.2
         version: 7.2.2(@types/node@24.10.1)(terser@5.44.1)
@@ -930,6 +942,19 @@ packages:
   '@types/node@24.10.1':
     resolution: {integrity: sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==}
 
+  '@typescript/vfs@1.6.2':
+    resolution: {integrity: sha512-hoBwJwcbKHmvd2QVebiytN1aELvpk9B74B4L1mFm/XT1Q/VOYAWl2vQ9AWRFtQq8zmz6enTpfTV8WRc4ATjW/g==}
+    peerDependencies:
+      typescript: '*'
+
+  '@valtown/codemirror-ts@2.3.1':
+    resolution: {integrity: sha512-v5XiI4WA+bUy0XDgkrqZksqBWgIUeyLZuC94Px/rhXBph8ASmVXaimlGDtt0vH/9t8aDdIZYdr59r9H3oKMFOg==}
+    peerDependencies:
+      '@codemirror/autocomplete': ^6
+      '@codemirror/lint': ^6
+      '@codemirror/state': ^6
+      '@codemirror/view': ^6
+
   '@vitejs/plugin-basic-ssl@2.1.0':
     resolution: {integrity: sha512-dOxxrhgyDIEUADhb/8OlV9JIqYLgos03YorAueTIeOUskLJSEsfwCByjbu98ctXitUN3znXKp0bYD/WHSudCeA==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -1009,6 +1034,9 @@ packages:
 
   codemirror@6.0.2:
     resolution: {integrity: sha512-VhydHotNW5w1UGK0Qj96BwSk/Zqbp9WbnyK2W/eVMv4QyF41INRGpjUhFJY7/uDNuudSc33a/PKr4iDqRduvHw==}
+
+  comlink@4.4.2:
+    resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -2353,6 +2381,20 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@typescript/vfs@1.6.2(typescript@5.9.3)':
+    dependencies:
+      debug: 4.4.3
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@valtown/codemirror-ts@2.3.1(@codemirror/autocomplete@6.19.1)(@codemirror/lint@6.9.2)(@codemirror/state@6.5.2)(@codemirror/view@6.38.7)':
+    dependencies:
+      '@codemirror/autocomplete': 6.19.1
+      '@codemirror/lint': 6.9.2
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.7
+
   '@vitejs/plugin-basic-ssl@2.1.0(vite@7.2.2(@types/node@24.10.1)(terser@5.44.1))':
     dependencies:
       vite: 7.2.2(@types/node@24.10.1)(terser@5.44.1)
@@ -2453,6 +2495,8 @@ snapshots:
       '@codemirror/search': 6.5.11
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.7
+
+  comlink@4.4.2: {}
 
   commander@2.20.3: {}
 
