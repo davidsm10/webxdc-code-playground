@@ -14,6 +14,6 @@ send.onclick = sendMsg;
 
 
 function receiveUpdate(update) {
-  output.innerHTML += update.payload + "<br>";
+  output.innerText += update.payload + "\n";
 }
 window.webxdc.setUpdateListener(receiveUpdate, 0);
