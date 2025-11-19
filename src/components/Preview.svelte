@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PlusIcon, XIcon } from "@lucide/svelte";
   import webxdcJs from "../webxdc.js?raw";
+  import eruda from "eruda?raw";
 
   let {
     filesContents,
@@ -23,6 +24,15 @@
       filesContents[0],
       "text/html"
     );
+    if (!dom.head) {
+      dom.documentElement.append(dom.createElement("head"));
+    }
+    const erudaScript = dom.createElement("script");
+    erudaScript.textContent = eruda;
+    const startErudaScript = dom.createElement("script");
+    startErudaScript.textContent = "eruda.init();";
+    dom.head.prepend(startErudaScript);
+    dom.head.prepend(erudaScript);
 
     const links = Object.values(dom.getElementsByTagName("link"));
     for (const link of links) {
