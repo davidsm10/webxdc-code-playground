@@ -9,7 +9,7 @@
 
   const filesNames = ["index.html", "index.css", "index.js", "manifest.toml"];
 
-  const filesContents: string[] = [];
+  const filesContents: string[] = $state([]);
 
   let activeTab = $state("index.html");
   let showPreview = $state(false);
@@ -44,7 +44,7 @@
 </script>
 
 <div class="container">
-  <div class="main" hidden={showPreview}>
+  <div class={showPreview ? "main hidden" : "main"}>
     <div class="header">
       <div class="tabs">
         {#each [...filesNames, "icon"] as name}
@@ -55,9 +55,11 @@
         {/each}
       </div>
       <div class="actions">
-        <button class="action-btn" onclick={() => (showPreview = true)}>
-          <PlayIcon size="15" />
-        </button>
+        {#if !showPreview}
+          <button class="action-btn" onclick={() => (showPreview = true)}>
+            <PlayIcon size="15" />
+          </button>
+        {/if}
         <button class="action-btn" onclick={exportWebxdc}>
           <Share2Icon size="15" />
         </button>
@@ -81,12 +83,32 @@
   </div>
 
   {#if showPreview}
-    <Preview {filesContents} bind:showPreview />
+    <div class="preview">
+      <Preview {filesContents} bind:showPreview />
+    </div>
   {/if}
 </div>
 
 <style>
-  .container, .main {
+  .container {
+    width: 100%;
     height: 100%;
+    display: flex;
+  }
+
+  .main,
+  .preview {
+    flex: 1;
+    width: 50%;
+  }
+
+  @media (max-width: 768px) {
+    .main.hidden {
+      display: none;
+    }
+    .main,
+    .preview {
+      width: 100%;
+    }
   }
 </style>
