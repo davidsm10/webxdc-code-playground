@@ -8,7 +8,7 @@ import { createWorker } from "@valtown/codemirror-ts/worker";
 import webxdctypes from "@webxdc/types/webxdc.d.ts?raw";
 import globalWebxdctypes from "@webxdc/types/global.d.ts?raw";
 
-const typescriptLibFiles = import.meta.glob("./lib.*.d.ts", {
+const typescriptLibFiles = import.meta.glob("./lib.*.ts", {
   base: "../../node_modules/typescript/lib/",
   query: "?raw",
   import: "default",
@@ -30,7 +30,8 @@ expose(
 
     const system = createSystem(fsMap);
     const compilerOpts: ts.CompilerOptions = {
-      target: ScriptTarget.ES2020,
+      target: ScriptTarget.ESNext,
+      lib: ["dom", "dom.iterable", "esnext", "scripthost"],
       types: ["./global.webxdc.d.ts"],
       allowJs: true,
       checkJs: true,
