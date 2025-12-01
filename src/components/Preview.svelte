@@ -1,29 +1,10 @@
 <script lang="ts">
-  import { PlusIcon, XIcon } from "@lucide/svelte";
-  import webxdcJs from "../webxdc.js?raw";
   import eruda from "eruda?raw";
 
-  let {
-    filesContents,
-    showPreview = $bindable(),
-  }: { filesContents: string[]; showPreview: boolean } = $props();
-  
+  let { filesContents }: { filesContents: string[] } = $props();
 
-  let devices = $state(["device1"]);
-  let activeTab = $state("device1");
-
-  //@ts-ignore
-  window.fakeWebxdcUpdates = [];
-  //@ts-ignore
-  window.fakeWebxdcUpdateListeners = {};
-  //@ts-ignore
-  window.fakeWebxdcRealtimeListeners = {};
-
-  function getHtml(device: string) {
-    const dom = new DOMParser().parseFromString(
-      filesContents[0],
-      "text/html"
-    );
+  function getHtml() {
+    const dom = new DOMParser().parseFromString(filesContents[0], "text/html");
     if (!dom.head) {
       dom.documentElement.append(dom.createElement("head"));
     }
@@ -51,7 +32,7 @@
       const path = new URL(script.src).pathname;
       if (path === "/webxdc.js") {
         script.removeAttribute("src");
-        script.textContent = webxdcJs.replaceAll("$$device$$", device);
+        script.textContent = "window.webxdc = window.parent.webxdc;";
       }
       if (path === "/index.js") {
         script.removeAttribute("src");
@@ -61,40 +42,12 @@
 
     return `<!DOCTYPE html>\n` + dom.documentElement.outerHTML;
   }
-
-  function addDevice() {
-    const next = "device" + (devices.length + 1);
-    devices.push(next);
-    activeTab = next;
-  }
 </script>
 
-<div class="header">
-  <div class="tabs">
-    {#each devices as device}
-      <button
-        class={activeTab === device ? "tab active" : "tab"}
-        onclick={() => (activeTab = device)}>{device}</button
-      >
-    {/each}
-    <button class="tab" onclick={addDevice}>
-      <PlusIcon size="15" />
-    </button>
-  </div>
-  <div class="actions">
-    <button class="action-btn" onclick={() => (showPreview = false)}>
-      <XIcon size="15" />
-    </button>
-  </div>
-</div>
-<div class="content">
-  {#each devices as device}
-    <iframe
-      title={device}
-      srcdoc={getHtml(device)}
-      frameborder="0"
-      width={activeTab !== device ? "0" : "100%"}
-      height={activeTab !== device ? "0" : "100%"}
-    ></iframe>
-  {/each}
-</div>
+<iframe
+  title="Preview"
+  srcdoc={getHtml()}
+  frameborder="0"
+  width="100%"
+  height="100%"
+></iframe>

@@ -12,7 +12,6 @@
   const filesContents: string[] = $state([]);
 
   let activeTab = $state("index.html");
-  let showPreview = $state(false);
 
   async function setSavedContent(name: string, index: number) {
     filesContents[index] =
@@ -44,71 +43,123 @@
 </script>
 
 <div class="container">
-  <div class={showPreview ? "main hidden" : "main"}>
-    <div class="header">
-      <div class="tabs">
-        {#each [...filesNames, "icon"] as name}
-          <button
-            class={activeTab === name ? "tab active" : "tab"}
-            onclick={() => (activeTab = name)}>{name}</button
-          >
-        {/each}
-      </div>
-      <div class="actions">
-        {#if !showPreview}
-          <button class="action-btn" onclick={() => (showPreview = true)}>
-            <PlayIcon size="15" />
-          </button>
-        {/if}
-        <button class="action-btn" onclick={exportWebxdc}>
-          <Share2Icon size="15" />
-        </button>
-      </div>
-    </div>
-
-    <div class="content">
-      {#each filesNames as name, index}
-        {#await setSavedContent(name, index) then}
-          <Editor
-            bind:value={filesContents[index]}
-            {name}
-            hidden={name !== activeTab}
-          />
-        {/await}
+  <div class="header">
+    <div class="tabs">
+      <button
+        class={activeTab === "PREVIEW" ? "tab active" : "tab"}
+        onclick={() => (activeTab = "PREVIEW")}
+        title="Preview"
+      >
+        <PlayIcon size="20" />
+      </button>
+      {#each [...filesNames, "icon"] as name}
+        <button
+          class={activeTab === name ? "tab active" : "tab"}
+          onclick={() => (activeTab = name)}>{name}</button
+        >
       {/each}
-      {#if activeTab === "icon"}
-        <IconPicker />
-      {/if}
+    </div>
+    <div class="actions">
+      <button class="action-btn" onclick={exportWebxdc}>
+        <Share2Icon size="15" />
+      </button>
     </div>
   </div>
 
-  {#if showPreview}
-    <div class="preview">
-      <Preview {filesContents} bind:showPreview />
-    </div>
-  {/if}
+  <div class="content">
+    {#if activeTab === "PREVIEW"}
+      <Preview {filesContents} />
+    {/if}
+    {#each filesNames as name, index}
+      {#await setSavedContent(name, index) then}
+        <Editor
+          bind:value={filesContents[index]}
+          {name}
+          hidden={name !== activeTab}
+        />
+      {/await}
+    {/each}
+    {#if activeTab === "icon"}
+      <IconPicker />
+    {/if}
+  </div>
 </div>
 
 <style>
   .container {
     width: 100%;
     height: 100%;
+  }
+
+  .header {
+    height: 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
+    gap: 3px;
+    align-items: center;
+    background-color: #21242b;
+    justify-content: space-between;
   }
 
-  .main,
-  .preview {
-    flex: 1;
-    width: 50%;
+  .content {
+    height: calc(100% - 45px);
   }
 
-  @media (max-width: 768px) {
-    .main.hidden {
-      display: none;
-    }
-    .main,
-    .preview {
-      width: 100%;
-    }
+  .tabs {
+    height: 100%;
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .actions {
+    height: 100%;
+    display: flex;
+    margin-right: 5px;
+    align-items: center;
+  }
+
+  .tab {
+    background-color: #21252b;
+    color: #7d8799;
+    border: none;
+    padding: 15px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-right: 0.5px solid #3a3f4b;
+    flex: 0 0 auto;
+  }
+
+  .tab.active {
+    background-color: #282c34;
+    color: #abb2bf;
+    border-top: 2px solid #61afef;
+  }
+
+  .tab:hover {
+    background-color: #3a3f4b;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    color: #7d8799;
+    font-size: 14px;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .action-btn:hover {
+    background-color: #2c313c;
+    color: #abb2bf;
+  }
+
+  .action-btn:active {
+    background-color: #3a3f4b;
   }
 </style>
