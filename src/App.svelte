@@ -74,7 +74,7 @@
     {#await configureSingle({ backend: IndexedDB }) then}
       {#await setupTemplate() then}
         {#if activeTab === "PREVIEW"}
-          <Preview />
+          <Preview entryPath="/index.html" />
         {/if}
         {#each filesNames as name}
           <Editor path={"/" + name} hidden={name !== activeTab} />

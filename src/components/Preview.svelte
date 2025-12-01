@@ -1,27 +1,23 @@
 <script lang="ts">
   import eruda from "eruda?raw";
-  import { readFile } from "@zenfs/core/promises";
+  import { exists, readFile } from "@zenfs/core/promises";
 
-  async function getHtml() {
-    const entry = await readFile("/index.html", { encoding: "utf-8" });
+  let { entryPath }: { entryPath: string } = $props();
+
+  async function getHtml(entryPath: string) {
+    const entry = await readFile(entryPath, { encoding: "utf-8" });
     const dom = new DOMParser().parseFromString(entry, "text/html");
     if (!dom.head) {
       dom.documentElement.append(dom.createElement("head"));
     }
-    const erudaScript = dom.createElement("script");
-    erudaScript.textContent = eruda;
-    const startErudaScript = dom.createElement("script");
-    startErudaScript.textContent = "eruda.init();";
-    dom.head.prepend(startErudaScript);
-    dom.head.prepend(erudaScript);
 
     const links = Object.values(dom.getElementsByTagName("link"));
     for (const link of links) {
       if (!link.href) continue;
       const path = new URL(link.href).pathname;
-      if (path === "/index.css") {
+      if (await exists(path)) {
         const style = dom.createElement("style");
-        const content = await readFile("/index.css", { encoding: "utf-8" });
+        const content = await readFile(path, { encoding: "utf-8" });
         style.textContent = content;
         link.replaceWith(style);
       }
@@ -34,19 +30,22 @@
       if (path === "/webxdc.js") {
         script.removeAttribute("src");
         script.textContent = "window.webxdc = window.parent.webxdc;";
-      }
-      if (path === "/index.js") {
+      } else if (await exists(path)) {
         script.removeAttribute("src");
-        const content = await readFile("/index.js", { encoding: "utf-8" });
+        const content = await readFile(path, { encoding: "utf-8" });
         script.textContent = content;
       }
     }
+
+    const erudaScript = dom.createElement("script");
+    erudaScript.textContent = eruda + "\neruda.init();";
+    dom.head.prepend(erudaScript);
 
     return `<!DOCTYPE html>\n` + dom.documentElement.outerHTML;
   }
 </script>
 
-{#await getHtml() then html}
+{#await getHtml(entryPath) then html}
   <iframe
     title="Preview"
     srcdoc={html}
