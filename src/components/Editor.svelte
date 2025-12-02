@@ -32,11 +32,13 @@
   }
 
   async function getExtensions() {
-    if (path === "/index.js") {
-      const path = "index.js";
+    if (path.endsWith(".js")) {
       return [
         basicSetup,
-        tsFacetWorker.of({ worker: typescriptWorker, path }),
+        tsFacetWorker.of({
+          worker: typescriptWorker,
+          path: path.replace("/", ""),
+        }),
         tsSyncWorker(),
         tsLinterWorker(),
         autocompletion({
