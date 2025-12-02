@@ -25,16 +25,6 @@
     typescriptWorker,
   }: { path: string; typescriptWorker: WorkerShape } = $props();
 
-  // svelte-ignore non_reactive_update
-  let lang: Function | undefined;
-  if (path.endsWith(".html")) {
-    lang = html;
-  } else if (path.endsWith(".css")) {
-    lang = css;
-  } else if (path.endsWith(".js")) {
-    lang = javascript;
-  }
-
   async function getExtensions() {
     if (path.endsWith(".js")) {
       const dontComplete = [
@@ -66,6 +56,7 @@
       let completions = snippets.concat(keywords);
       return [
         basicSetup,
+        javascript(),
         tsFacetWorker.of({
           worker: typescriptWorker,
           path: path.replace("/", ""),
@@ -80,9 +71,13 @@
         }),
         tsHoverWorker(),
       ];
-    } else {
-      return [basicSetup];
+    } else if (path.endsWith(".html")) {
+      return [basicSetup, html()];
+    } else if (path.endsWith(".css")) {
+      return [basicSetup, css()];
     }
+
+    return [basicSetup];
   }
 
   async function onReady(view: EditorView) {
@@ -103,7 +98,6 @@
       {extensions}
       lineWrapping={true}
       theme={oneDark}
-      lang={lang && lang()}
       {value}
       onchange={(val) => writeFile(path, val)}
       onready={onReady}
