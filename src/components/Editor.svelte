@@ -17,7 +17,7 @@
     tsHoverWorker,
   } from "@valtown/codemirror-ts";
 
-  let { path, hidden }: { path: string; hidden: boolean } = $props();
+  let { path }: { path: string } = $props();
 
   // svelte-ignore non_reactive_update
   let lang: Function | undefined;
@@ -63,22 +63,20 @@
   }
 </script>
 
-<div style="height: 100%;" {hidden}>
-  {#await readFile(path, { encoding: "utf-8" }) then value}
-    {#await getExtensions() then extensions}
-      <CodeMirror
-        styles={{
-          "&": { height: "100%" },
-          ".cm-scroller": { "overflow-y": "auto" },
-        }}
-        {extensions}
-        lineWrapping={true}
-        theme={oneDark}
-        lang={lang && lang()}
-        {value}
-        onchange={(val) => writeFile(path, val)}
-        onready={onReady}
-      />
-    {/await}
+{#await readFile(path, { encoding: "utf-8" }) then value}
+  {#await getExtensions() then extensions}
+    <CodeMirror
+      styles={{
+        "&": { height: "100%" },
+        ".cm-scroller": { "overflow-y": "auto" },
+      }}
+      {extensions}
+      lineWrapping={true}
+      theme={oneDark}
+      lang={lang && lang()}
+      {value}
+      onchange={(val) => writeFile(path, val)}
+      onready={onReady}
+    />
   {/await}
-</div>
+{/await}

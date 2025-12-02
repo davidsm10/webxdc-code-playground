@@ -77,7 +77,9 @@
           <Preview entryPath="/index.html" />
         {/if}
         {#each filesNames as name}
-          <Editor path={"/" + name} hidden={name !== activeTab} />
+          <div hidden={name !== activeTab} style="height: 100%;">
+            <Editor path={"/" + name} />
+          </div>
         {/each}
         {#if activeTab === "icon"}
           <IconPicker />
