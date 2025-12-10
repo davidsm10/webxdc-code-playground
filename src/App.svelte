@@ -1,8 +1,9 @@
 <script lang="ts">
   import Editor from "./components/Editor.svelte";
-  import IconPicker from "./components/IconPicker.svelte";
   import Preview from "./components/Preview.svelte";
-  import { PlayIcon, Share2Icon } from "@lucide/svelte";
+  import FileManager from "./components/FileManager/FileManager.svelte";
+  import { openTabs, activeTab } from "./state.svelte";
+  import { FilesIcon, PlayIcon, Share2Icon } from "@lucide/svelte";
   import JSZip from "jszip";
   import { configureSingle } from "@zenfs/core";
   import { resolve } from "@zenfs/core/path";
@@ -20,14 +21,10 @@
   const typescriptWorker = wrap<WorkerShape>(rawTypescriptWorker);
   typescriptWorker.initialize();
 
-  const filesNames = ["index.html", "index.css", "index.js", "manifest.toml"];
-
-  let activeTab = $state("index.html");
-
   async function setupTemplate() {
     if (!(await readdir("/")).length) {
-      for (const name of filesNames) {
-        const path = "/" + name;
+      const list: string[] = await (await fetch("/template.json")).json();
+      for (const path of list) {
         const content = await (await fetch("/template" + path)).text();
         await writeFile(path, content);
       }
@@ -61,16 +58,23 @@
   <div class="header">
     <div class="tabs">
       <button
-        class={activeTab === "PREVIEW" ? "tab active" : "tab"}
-        onclick={() => (activeTab = "PREVIEW")}
+        class={activeTab.id === "FILES" ? "tab active" : "tab"}
+        onclick={() => (activeTab.id = "FILES")}
+        title="Files"
+      >
+        <FilesIcon size="20" />
+      </button>
+      <button
+        class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
+        onclick={() => (activeTab.id = "PREVIEW")}
         title="Preview"
       >
         <PlayIcon size="20" />
       </button>
-      {#each [...filesNames, "icon"] as name}
+      {#each Object.entries(openTabs) as [path, tab]}
         <button
-          class={activeTab === name ? "tab active" : "tab"}
-          onclick={() => (activeTab = name)}>{name}</button
+          class={activeTab.id === path ? "tab active" : "tab"}
+          onclick={() => (activeTab.id = path)}>{tab.name}</button
         >
       {/each}
     </div>
@@ -84,17 +88,17 @@
   <div class="content">
     {#await configureSingle({ backend: IndexedDB }) then}
       {#await setupTemplate() then}
-        {#if activeTab === "PREVIEW"}
+        <div hidden={activeTab.id !== "FILES"} style="height: 100%;">
+          <FileManager />
+        </div>
+        {#if activeTab.id === "PREVIEW"}
           <Preview entryPath="/index.html" />
         {/if}
-        {#each filesNames as name}
-          <div hidden={name !== activeTab} style="height: 100%;">
-            <Editor path={"/" + name} {typescriptWorker} />
+        {#each Object.keys(openTabs) as path}
+          <div hidden={path !== activeTab.id} style="height: 100%;">
+            <Editor {path} {typescriptWorker} />
           </div>
         {/each}
-        {#if activeTab === "icon"}
-          <IconPicker />
-        {/if}
       {/await}
     {/await}
   </div>
