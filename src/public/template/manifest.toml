@@ -1,1 +1,3 @@
+# https://webxdc.org/docs/spec/format.html#the-manifesttoml-file
 name = "Webxdc name"
+# source_code_url = "https://github.com/DavidSM100/webxdc-code-playground"
