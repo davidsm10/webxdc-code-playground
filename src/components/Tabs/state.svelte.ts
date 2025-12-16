@@ -5,6 +5,17 @@ export let openTabs: { tabs: OpenTabs } = $state({
     "/index.html": {
       name: "index.html",
     },
+    "/index.js": {
+      name: "index.js",
+    },
+    // Let's keep this out to save space on mobile.
+    // This file is not really essential.
+    // "/index.css": {
+    //   name: "index.css",
+    // },
+    "/manifest.toml": {
+      name: "manifest.toml",
+    },
   },
 });
 
