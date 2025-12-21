@@ -79,7 +79,7 @@
       {/each}
     </div>
     <div class="actions">
-      <button class="action-btn" onclick={exportWebxdc}>
+      <button class="action-btn" onclick={exportWebxdc} title="Share">
         <Share2Icon size="15" />
       </button>
     </div>
