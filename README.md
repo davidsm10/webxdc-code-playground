@@ -21,3 +21,9 @@ pnpm run dev
 ```sh
 pnpm run build
 ```
+
+To build with [eruda](https://eruda.liriliri.io/):
+
+```sh
+NODE_ENV=debug pnpm run build
+```
