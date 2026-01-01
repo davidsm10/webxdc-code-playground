@@ -20,8 +20,7 @@ expose(
     const fsMap = new Map<string, string>();
 
     for (const path in typescriptLibFiles) {
-      const content = typescriptLibFiles[path];
-      //@ts-ignore
+      const content = typescriptLibFiles[path] as string;
       fsMap.set(path.replace(".", ""), content);
     }
 
@@ -42,7 +41,6 @@ expose(
       ts,
       compilerOpts
     );
-    env.createFile("index.js", "");
     return env;
   })
 );
