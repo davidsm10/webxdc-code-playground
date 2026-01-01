@@ -80,7 +80,7 @@
         <PlayIcon size="20" />
       </button>
       <button class="action-btn" onclick={exportWebxdc} title="Share">
-        <Share2Icon size="15" />
+        <Share2Icon size="20" />
       </button>
     </div>
   </div>
@@ -135,7 +135,7 @@
   .panel-right {
     height: 100%;
     display: flex;
-    margin-right: 5px;
+    border-left: 0.5px solid #3a3f4b;
   }
 
   .tab {
@@ -163,10 +163,8 @@
   .action-btn {
     background: transparent;
     border: none;
-    border-radius: 3px;
     color: #7d8799;
-    font-size: 14px;
-    padding: 5px;
+    padding: 15px 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
