@@ -56,20 +56,13 @@
 
 <div class="container">
   <div class="header">
-    <div class="tabs">
+    <div class="panel-left">
       <button
         class={activeTab.id === "FILES" ? "tab active" : "tab"}
         onclick={() => (activeTab.id = "FILES")}
         title="Files"
       >
         <FilesIcon size="20" />
-      </button>
-      <button
-        class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
-        onclick={() => (activeTab.id = "PREVIEW")}
-        title="Preview"
-      >
-        <PlayIcon size="20" />
       </button>
       {#each Object.entries(openTabs) as [path, tab]}
         <button
@@ -78,7 +71,14 @@
         >
       {/each}
     </div>
-    <div class="actions">
+    <div class="panel-right">
+      <button
+        class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
+        onclick={() => (activeTab.id = "PREVIEW")}
+        title="Preview"
+      >
+        <PlayIcon size="20" />
+      </button>
       <button class="action-btn" onclick={exportWebxdc} title="Share">
         <Share2Icon size="15" />
       </button>
@@ -126,17 +126,16 @@
     height: calc(100% - 45px);
   }
 
-  .tabs {
+  .panel-left {
     height: 100%;
     display: flex;
     overflow-x: auto;
   }
 
-  .actions {
+  .panel-right {
     height: 100%;
     display: flex;
     margin-right: 5px;
-    align-items: center;
   }
 
   .tab {
