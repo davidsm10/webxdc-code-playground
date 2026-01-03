@@ -142,7 +142,7 @@
     background-color: #21252b;
     color: #7d8799;
     border: none;
-    padding: 15px 12px;
+    padding: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
