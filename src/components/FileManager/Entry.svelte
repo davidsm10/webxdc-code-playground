@@ -54,7 +54,7 @@
     if (node.type === "dir") {
       open = !open;
     } else {
-      openTabs[node.path] = { name: node.name };
+      openTabs.tabs[node.path] = { name: node.name };
       activeTab.id = node.path;
     }
   }

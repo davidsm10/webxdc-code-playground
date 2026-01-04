@@ -13,7 +13,7 @@
   }
 
   function onCloseTabClick(tabId: string) {
-    const openTabsIds = Object.keys(openTabs);
+    const openTabsIds = Object.keys(openTabs.tabs);
     if (openTabsIds.length > 1) {
       const currentTabIndex = openTabsIds.indexOf(tabId);
       activeTab.id =
@@ -21,12 +21,12 @@
     } else {
       activeTab.id = "FILES";
     }
-    delete openTabs[tabId];
+    delete openTabs.tabs[tabId];
   }
 </script>
 
 <div class="tabs">
-  {#each Object.entries(openTabs) as [id, tab]}
+  {#each Object.entries(openTabs.tabs) as [id, tab]}
     <div
       class={activeTab.id === id ? "tab active" : "tab"}
       role="button"

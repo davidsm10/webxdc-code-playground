@@ -88,7 +88,7 @@
       if (node.type === "file") {
         await unlink(node.path);
         if (Object.keys(openTabs).includes(node.path)) {
-          delete openTabs[node.path];
+          delete openTabs.tabs[node.path];
         }
       } else {
         await rm(node.path, { recursive: true, force: true });

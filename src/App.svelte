@@ -90,7 +90,7 @@
         {#if activeTab.id === "PREVIEW"}
           <Preview entryPath="/index.html" />
         {/if}
-        {#each Object.keys(openTabs) as path}
+        {#each Object.keys(openTabs.tabs) as path}
           <div hidden={path !== activeTab.id} style="height: 100%;">
             <Editor {path} {typescriptWorker} />
           </div>

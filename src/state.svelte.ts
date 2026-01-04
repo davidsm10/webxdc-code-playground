@@ -1,8 +1,10 @@
 import type { OpenTabs } from "./types";
 
-export let openTabs: OpenTabs = $state({
-  "/index.html": {
-    name: "index.html",
+export let openTabs: { tabs: OpenTabs } = $state({
+  tabs: {
+    "/index.html": {
+      name: "index.html",
+    },
   },
 });
 
