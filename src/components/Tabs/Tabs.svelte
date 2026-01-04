@@ -78,6 +78,7 @@
     background-color: #282c34;
     color: #abb2bf;
     border-top: 2px solid #61afef;
+    padding-right: 0;
   }
 
   .tab:hover {
@@ -87,7 +88,7 @@
   .close-tab-btn {
     color: #7d8799;
     background-color: #2e323c;
-    margin-left: 5px;
+    margin: 5px;
     border: none;
     border-radius: 3px;
     padding: 2px;
