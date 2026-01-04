@@ -34,6 +34,7 @@
     "comlink": "^4.4.2",
     "eruda": "^3.4.3",
     "jszip": "^3.10.1",
+    "localforage": "^1.10.0",
     "svelte": "^5.43.5",
     "svelte-codemirror-editor": "^2.1.0",
     "tippy.js": "^6.3.7",

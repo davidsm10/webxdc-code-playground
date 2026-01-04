@@ -1,6 +1,8 @@
 <script lang="ts">
   import { openTabs, activeTab } from "./state.svelte";
+  import type { OpenTabs } from "./types";
   import { XIcon } from "@lucide/svelte";
+  import { generalDB } from "../../app";
 
   function onTabClick(tabId: string) {
     activeTab.id = tabId;
@@ -23,34 +25,65 @@
     }
     delete openTabs.tabs[tabId];
   }
+
+  let setSavedTabsPromise = setSavedTabs();
+  async function setSavedTabs() {
+    const savedOpenTabs = await generalDB.getItem<OpenTabs>("tabs");
+    const savedActiveTab = await generalDB.getItem<string>("activeTab");
+
+    if (savedOpenTabs) {
+      openTabs.tabs = savedOpenTabs;
+    }
+
+    if (savedActiveTab) {
+      activeTab.id = savedActiveTab;
+    }
+  }
+
+  $effect(() => {
+    //Just to trigger this effect
+    Object.keys(openTabs.tabs);
+    setSavedTabsPromise.then(() => {
+      generalDB.setItem("tabs", $state.snapshot(openTabs).tabs);
+    });
+  });
+
+  $effect(() => {
+    activeTab.id;
+    setSavedTabsPromise.then(() => {
+      generalDB.setItem("activeTab", $state.snapshot(activeTab).id);
+    });
+  });
 </script>
 
 <div class="tabs">
-  {#each Object.entries(openTabs.tabs) as [id, tab]}
-    <div
-      class={activeTab.id === id ? "tab active" : "tab"}
-      role="button"
-      tabindex="0"
-      onclick={() => onTabClick(id)}
-      onkeydown={(e) => onTabKeydown(e, id)}
-    >
-      <small>
-        {tab.name}
-      </small>
-      {#if activeTab.id === id}
-        <button
-          aria-label="Close tab"
-          onclick={(e) => {
-            e.stopPropagation();
-            onCloseTabClick(id);
-          }}
-          class="close-tab-btn"
-        >
-          <XIcon size="20" />
-        </button>
-      {/if}
-    </div>
-  {/each}
+  {#await setSavedTabsPromise then}
+    {#each Object.entries(openTabs.tabs) as [id, tab]}
+      <div
+        class={activeTab.id === id ? "tab active" : "tab"}
+        role="button"
+        tabindex="0"
+        onclick={() => onTabClick(id)}
+        onkeydown={(e) => onTabKeydown(e, id)}
+      >
+        <small>
+          {tab.name}
+        </small>
+        {#if activeTab.id === id}
+          <button
+            aria-label="Close tab"
+            onclick={(e) => {
+              e.stopPropagation();
+              onCloseTabClick(id);
+            }}
+            class="close-tab-btn"
+          >
+            <XIcon size="20" />
+          </button>
+        {/if}
+      </div>
+    {/each}
+  {/await}
 </div>
 
 <style>
