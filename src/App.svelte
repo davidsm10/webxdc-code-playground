@@ -57,16 +57,14 @@
 
 <div class="container">
   <div class="header">
-    <div class="panel-left">
-      <button
-        class={activeTab.id === "FILES" ? "tab active" : "tab"}
-        onclick={() => (activeTab.id = "FILES")}
-        title="Files"
-      >
-        <FilesIcon size="20" />
-      </button>
-      <Tabs />
-    </div>
+    <button
+      class={activeTab.id === "FILES" ? "tab active" : "tab"}
+      onclick={() => (activeTab.id = "FILES")}
+      title="Files"
+    >
+      <FilesIcon size="20" />
+    </button>
+    <Tabs />
     <div class="panel-right">
       <button
         class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
@@ -112,18 +110,11 @@
     top: 0;
     z-index: 1000;
     display: flex;
-    align-items: center;
     background-color: #21242b;
-    justify-content: space-between;
   }
 
   .content {
     height: calc(100% - 45px);
-  }
-
-  .panel-left {
-    height: 100%;
-    display: flex;
   }
 
   .panel-right {
