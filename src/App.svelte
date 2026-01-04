@@ -112,7 +112,6 @@
     top: 0;
     z-index: 1000;
     display: flex;
-    gap: 3px;
     align-items: center;
     background-color: #21242b;
     justify-content: space-between;
