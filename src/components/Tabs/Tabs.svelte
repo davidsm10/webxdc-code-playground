@@ -75,15 +75,22 @@
       flex: 0 0 auto;
     }
 
-    .tab.active {
+    .tab.active,
+    .tab.active:focus {
       background-color: #282c34;
       color: #abb2bf;
+      border: none;
       border-top: 2px solid #61afef;
       padding-right: 0;
     }
 
     .tab:hover {
       background-color: #3a3f4b;
+    }
+
+    .tab:focus {
+      outline: none;
+      border: 0.5px solid #61afef;
     }
   }
 
