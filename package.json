@@ -37,7 +37,7 @@
     "localforage": "^1.10.0",
     "svelte": "^5.43.5",
     "svelte-codemirror-editor": "^2.1.0",
-    "tippy.js": "^6.3.7",
+    "svelte-floating-ui": "^1.6.2",
     "typescript": "~5.9.3"
   }
 }

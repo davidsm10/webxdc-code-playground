@@ -9,8 +9,9 @@
   import Actions from "./Actions.svelte";
   import type { DirTree, Node } from "./types";
   import { getDirTree, sortNodes } from "./util";
-  import tippy from "tippy.js";
-  import { onMount } from "svelte";
+  import { offset, flip, shift } from "svelte-floating-ui/dom";
+  import { createFloatingActions } from "svelte-floating-ui";
+  import { tick } from "svelte";
   import { activeTab, openTabs } from "../Tabs/state.svelte";
 
   let {
@@ -34,20 +35,13 @@
   let open = $state(true);
 
   let showActions = $state(false);
-  let actionsButton: HTMLButtonElement;
+  // svelte-ignore non_reactive_update
   let actionsDiv: HTMLDivElement;
 
-  onMount(() => {
-    tippy(actionsButton, {
-      content: actionsDiv,
-      placement: "left-start",
-      trigger: "click",
-      interactive: true,
-      delay: [200, 0],
-      onHidden: () => {
-        showActions = false;
-      },
-    });
+  const [floatingRef, floatingContent] = createFloatingActions({
+    strategy: "absolute",
+    placement: "left-start",
+    middleware: [offset(6), flip(), shift()],
   });
 
   async function onClick() {
@@ -57,6 +51,20 @@
       openTabs.tabs[node.path] = { name: node.name };
       activeTab.id = node.path;
     }
+  }
+
+  async function onShowActionsClick() {
+    showActions = true;
+    await tick();
+    actionsDiv.focus();
+  }
+
+  function onActionsFocusOut() {
+    setTimeout(() => {
+      if (!actionsDiv.contains(document.activeElement)) {
+        showActions = false;
+      }
+    }, 0);
   }
 </script>
 
@@ -71,7 +79,7 @@
     {/if}
     {node.name}
   </button>
-  <button onclick={() => (showActions = true)} bind:this={actionsButton}>
+  <button onclick={onShowActionsClick} use:floatingRef>
     <EllipsisVerticalIcon size="20" />
   </button>
 </div>
@@ -85,11 +93,18 @@
   </div>
 {/if}
 
-<div hidden={!showActions} class="actions" bind:this={actionsDiv}>
-  {#if showActions}
+{#if showActions}
+  <div
+    style="position: absolute;"
+    use:floatingContent
+    role="menu"
+    tabindex="-1"
+    onfocusout={onActionsFocusOut}
+    bind:this={actionsDiv}
+  >
     <Actions bind:node bind:dirTree bind:children bind:showActions />
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style>
   button {
