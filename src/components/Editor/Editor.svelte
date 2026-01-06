@@ -1,15 +1,11 @@
 <script lang="ts">
   import CodeMirror from "svelte-codemirror-editor";
   import { basicSetup, EditorView } from "codemirror";
-  import {
-    autocompletion,
-    ifNotIn,
-    completeFromList,
-  } from "@codemirror/autocomplete";
+  import { autocompletion } from "@codemirror/autocomplete";
   import { oneDark } from "@codemirror/theme-one-dark";
   import { html } from "@codemirror/lang-html";
   import { css } from "@codemirror/lang-css";
-  import { javascript, snippets } from "@codemirror/lang-javascript";
+  import { javascript } from "@codemirror/lang-javascript";
   import { json } from "@codemirror/lang-json";
   import { writeFile, readFile } from "@zenfs/core/promises";
   import { type WorkerShape } from "@valtown/codemirror-ts/worker";
@@ -20,6 +16,7 @@
     tsAutocompleteWorker,
     tsHoverWorker,
   } from "@valtown/codemirror-ts";
+  import { jsCompletions } from "./js-completions";
 
   let {
     path,
@@ -28,33 +25,6 @@
 
   async function getExtensions() {
     if (path.endsWith(".js")) {
-      const dontComplete = [
-        "TemplateString",
-        "String",
-        "RegExp",
-        "LineComment",
-        "BlockComment",
-        "VariableDefinition",
-        "TypeDefinition",
-        "Label",
-        "PropertyDefinition",
-        "PropertyName",
-        "PrivatePropertyDefinition",
-        "PrivatePropertyName",
-        "JSXText",
-        "JSXAttributeValue",
-        "JSXOpenTag",
-        "JSXCloseTag",
-        "JSXSelfClosingTag",
-        ".",
-        "?.",
-      ];
-      let kwCompletion = (name: string) => ({ label: name, type: "keyword" });
-      const keywords =
-        "break case const continue default delete export extends false finally in instanceof let new return static super switch this throw true typeof var yield"
-          .split(" ")
-          .map(kwCompletion);
-      let completions = snippets.concat(keywords);
       return [
         basicSetup,
         javascript(),
@@ -65,10 +35,7 @@
         tsSyncWorker(),
         tsLinterWorker(),
         autocompletion({
-          override: [
-            tsAutocompleteWorker(),
-            ifNotIn(dontComplete, completeFromList(completions)),
-          ],
+          override: [tsAutocompleteWorker(), jsCompletions],
         }),
         tsHoverWorker(),
       ];
