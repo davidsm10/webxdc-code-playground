@@ -16,7 +16,15 @@ import {
 import { jsCompletions } from "./js-completions";
 import type { WorkerShape } from "@valtown/codemirror-ts/worker";
 
-export const generalExtensions = [basicSetup, oneDark, EditorView.lineWrapping];
+export const generalExtensions = [
+  basicSetup,
+  oneDark,
+  EditorView.theme({
+    "&": { height: "100%" },
+    ".cm-scroller": { "overflow-y": "auto" },
+  }),
+  EditorView.lineWrapping,
+];
 
 export function getLanguageExtensions(
   path: string,
