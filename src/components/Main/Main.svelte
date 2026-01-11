@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Tabs from "./components/Tabs/Tabs.svelte";
-  import Editor from "./components/Editor/Editor.svelte";
-  import Preview from "./components/Preview.svelte";
-  import FileManager from "./components/FileManager/FileManager.svelte";
-  import { openTabs, activeTab } from "./components/Tabs/state.svelte";
+  import Tabs from "../Tabs/Tabs.svelte";
+  import Editor from "../Editor/Editor.svelte";
+  import Preview from "../Preview.svelte";
+  import FileManager from "../FileManager/FileManager.svelte";
+  import { openTabs, activeTab } from "../Tabs/state.svelte";
   import {
     EllipsisVerticalIcon,
     FilesIcon,
@@ -12,13 +12,13 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { setupZenFSDB, setupTemplate, exportWebxdc } from "./app";
+  import { setupZenFSDB, setupTemplate, exportWebxdc } from "./main";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
 
   const rawTypescriptWorker = new Worker(
-    new URL("./typescript/worker.ts", import.meta.url),
+    new URL("../../typescript/worker.ts", import.meta.url),
     {
       type: "module",
     },

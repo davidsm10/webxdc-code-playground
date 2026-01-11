@@ -2,7 +2,7 @@
   import { openTabs, activeTab } from "./state.svelte";
   import type { OpenTabs } from "./types";
   import { XIcon } from "@lucide/svelte";
-  import { generalDB } from "../../app";
+  import { generalDB } from "../Main/main";
 
   function onTabClick(tabId: string) {
     activeTab.id = tabId;
