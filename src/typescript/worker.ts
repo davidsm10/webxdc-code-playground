@@ -12,7 +12,7 @@ const typescriptLibFiles = import.meta.glob("./lib.*.ts", {
   base: "../../node_modules/typescript/lib/",
   query: "?raw",
   import: "default",
-  eager: true
+  eager: true,
 });
 
 expose(
@@ -39,8 +39,8 @@ expose(
       system,
       [],
       ts,
-      compilerOpts
+      compilerOpts,
     );
     return env;
-  })
+  }),
 );

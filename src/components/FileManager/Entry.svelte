@@ -22,7 +22,7 @@
     node: Node;
   } = $props();
   const depth = $derived(
-    node.path === "/" ? 0 : node.path.split("/").length - 1
+    node.path === "/" ? 0 : node.path.split("/").length - 1,
   );
   let children: DirTree = $state({});
 
