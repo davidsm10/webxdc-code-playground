@@ -164,7 +164,6 @@
     color: #abb2bf;
     background-color: transparent;
     border-bottom: 0.1px solid #3a3f4b;
-    outline-offset: -2px;
   }
 
   .actions button:hover {
@@ -174,7 +173,10 @@
 
   .actions button:focus {
     color: #fff;
-    outline: 0.5px solid #61afef;
+    outline-style: solid;
+    outline-offset: -2px;
+    outline-width: 0.5px;
+    outline-color: #61afef;
   }
 
   .actions button:active {

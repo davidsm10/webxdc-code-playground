@@ -148,7 +148,9 @@
   }
 
   .close-tab-btn:focus {
-    outline: 0.5px solid #61afef;
+    outline-style: solid;
+    outline-width: 0.5px;
+    outline-color: #61afef;
   }
 
   .close-tab-btn:active {

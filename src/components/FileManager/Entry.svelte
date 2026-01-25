@@ -124,7 +124,7 @@
   }
 
   button:focus {
-    outline: none;
+    outline-style: none;
     background-color: #3e4452;
     color: #fff;
   }

@@ -208,7 +208,7 @@
     border: none;
     border-radius: 3px;
     padding: 5px;
-    outline: none;
+    outline-style: none;
   }
 
   .container {
@@ -255,7 +255,7 @@
 
   .actions button:focus,
   .new-node-form button:focus {
-    outline: none;
+    outline-style: none;
     background-color: #4b5263;
     color: #fff;
   }
