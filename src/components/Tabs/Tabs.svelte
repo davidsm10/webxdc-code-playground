@@ -112,7 +112,7 @@
     .tab.active:focus {
       background-color: #282c34;
       color: #abb2bf;
-      border: none;
+      outline-style: none;
       border-top: 2px solid #61afef;
       padding-right: 0;
     }
@@ -122,8 +122,10 @@
     }
 
     .tab:focus {
-      outline: none;
-      border: 0.5px solid #61afef;
+      outline-style: solid;
+      outline-offset: -2px;
+      outline-width: 0.5px;
+      outline-color: #61afef;
     }
   }
 
