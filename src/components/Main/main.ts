@@ -4,6 +4,7 @@ import JSZip from "jszip";
 import { resolve } from "@zenfs/core/path";
 import { configureSingle } from "@zenfs/core";
 import { IndexedDB } from "@zenfs/dom";
+import { downloadFile } from "../../util";
 
 export const generalDB = localforage.createInstance({
   name: "code-playground-general-database",
@@ -26,7 +27,7 @@ export async function setupTemplate() {
   }
 }
 
-export async function exportWebxdc() {
+export async function getResultZip() {
   const zip = new JSZip();
   const files = await readdir("/", { withFileTypes: true, recursive: true });
   for (const file of files) {
@@ -35,15 +36,23 @@ export async function exportWebxdc() {
     const content = await readFile(path);
     zip.file(path.replace("/", ""), content);
   }
-  const zipBlob = await zip.generateAsync({
+  return await zip.generateAsync({
     type: "blob",
     compression: "DEFLATE",
     compressionOptions: { level: 9 },
   });
-  window.webxdc.sendToChat({
-    file: {
-      name: "app.xdc",
-      blob: zipBlob,
-    },
-  });
+}
+
+export async function exportResult() {
+  const outputZip = await getResultZip();
+  if (window.webxdc) {
+    window.webxdc.sendToChat({
+      file: {
+        name: "app.xdc",
+        blob: outputZip,
+      },
+    });
+  } else {
+    downloadFile(outputZip, "app.zip");
+  }
 }

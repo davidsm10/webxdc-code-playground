@@ -12,7 +12,7 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { setupZenFSDB, setupTemplate, exportWebxdc } from "./main";
+  import { setupZenFSDB, setupTemplate, exportResult } from "./main";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
@@ -89,9 +89,9 @@
       use:floatingContent
       onfocusout={onActionsFocusOut}
     >
-      <button onclick={exportWebxdc}>
+      <button onclick={exportResult}>
         <Share2Icon size="20px" />
-        Share webxdc
+        Export
       </button>
     </div>
   {/if}

@@ -21,3 +21,16 @@ export async function copyText(text: string) {
     legacyCopy(text);
   }
 }
+
+export function downloadFile(content: Blob, filename: string) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(content);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  setTimeout(() => {
+    URL.revokeObjectURL(link.href);
+  }, 5000);
+}
