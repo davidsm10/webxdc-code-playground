@@ -1,0 +1,30 @@
+{
+  "web": {
+    "files": ["/index.html", "/style.css", "/script.js"],
+    "tabs": {
+      "/index.html": {
+        "name": "index.html"
+      },
+      "/script.js": {
+        "name": "script.js"
+      },
+      "/style.css": {
+        "name": "index.css"
+      }
+    }
+  },
+  "webxdc": {
+    "files": ["/index.html", "/style.css", "/script.js", "/manifest.toml"],
+    "tabs": {
+      "/index.html": {
+        "name": "index.html"
+      },
+      "/script.js": {
+        "name": "script.js"
+      },
+      "/manifest.toml": {
+        "name": "manifest.toml"
+      }
+    }
+  }
+}
