@@ -18,7 +18,7 @@ export default defineConfig({
         short_name: "Playground",
       },
       workbox: { maximumFileSizeToCacheInBytes: 999999999999 },
-      pwaAssets: { image: "public-pwa/icon.png" },
+      pwaAssets: { image: "public-pwa/icon.svg" },
     }),
   ],
 });
