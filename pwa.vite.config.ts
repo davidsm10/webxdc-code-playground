@@ -16,6 +16,8 @@ export default defineConfig({
       manifest: {
         name: "Code Playground",
         short_name: "Playground",
+        background_color: "#282c34",
+        theme_color: "#282c34",
       },
       workbox: { maximumFileSizeToCacheInBytes: 999999999999 },
       pwaAssets: { image: "public-pwa/icon.svg" },
