@@ -8,7 +8,7 @@
   import Entry from "./Entry.svelte";
   import Actions from "./Actions.svelte";
   import type { DirTree, Node } from "./types";
-  import { getDirTree, sortNodes } from "./util";
+  import { getDirTree, sortNodes } from "./file-manager";
   import { offset, flip, shift } from "svelte-floating-ui/dom";
   import { createFloatingActions } from "svelte-floating-ui";
   import { tick } from "svelte";

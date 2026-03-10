@@ -18,7 +18,7 @@
     rename,
   } from "@zenfs/core/promises";
   import { resolve, dirname } from "@zenfs/core/path";
-  import { isValidName } from "./util";
+  import { isValidName } from "./file-manager";
   import { openTabs } from "../Tabs/state.svelte";
   import { copyText, importFiles } from "../../util";
   import { tick } from "svelte";
