@@ -205,7 +205,7 @@
         <DownloadIcon size="20" />
         Export
       </button>
-      {#if node.path !== "/" && node.path !== "/index.html"}
+      {#if node.path !== "/"}
         <button onclick={() => showNameForm("rename")}>
           <CaseSensitiveIcon size="20" />
           Rename
