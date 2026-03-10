@@ -54,3 +54,16 @@ export async function importFiles(options?: {
     input.click();
   });
 }
+
+export async function exportFile(blob: Blob, name: string) {
+  if (window.webxdc) {
+    await window.webxdc.sendToChat({
+      file: {
+        blob,
+        name,
+      },
+    });
+  } else {
+    downloadFile(blob, name);
+  }
+}

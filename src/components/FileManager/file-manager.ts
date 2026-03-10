@@ -1,6 +1,7 @@
-import { readdir } from "@zenfs/core/promises";
+import { readdir, readFile } from "@zenfs/core/promises";
 import type { DirTree, Node } from "./types";
 import { resolve } from "@zenfs/core/path";
+import JSZip from "jszip";
 
 export async function getDirTree(path: string): Promise<DirTree> {
   const entries = await readdir(path, { withFileTypes: true });
@@ -29,4 +30,23 @@ export function isValidName(name: string) {
   if (!name.trim()) return false;
   if (name.includes("/")) return false;
   return true;
+}
+
+export async function getFolderZip(path: string) {
+  const zip = new JSZip();
+  const files = await readdir(path, { withFileTypes: true, recursive: true });
+  for (const file of files) {
+    const path = resolve(file.parentPath, file.name);
+    if (file.isDirectory()) {
+      zip.folder(path);
+    } else if (file.isFile()) {
+      const content = await readFile(path);
+      zip.file(path, content);
+    }
+  }
+  return await zip.generateAsync({
+    type: "blob",
+    compression: "DEFLATE",
+    compressionOptions: { level: 9 },
+  });
 }

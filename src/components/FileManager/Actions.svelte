@@ -3,6 +3,7 @@
     CaseSensitiveIcon,
     CheckIcon,
     CopyIcon,
+    DownloadIcon,
     FilePlusIcon,
     FolderPlusIcon,
     ImportIcon,
@@ -16,12 +17,14 @@
     unlink,
     rm,
     rename,
+    readFile,
   } from "@zenfs/core/promises";
   import { resolve, dirname } from "@zenfs/core/path";
   import { isValidName } from "./file-manager";
   import { openTabs } from "../Tabs/state.svelte";
-  import { copyText, importFiles } from "../../util";
+  import { copyText, importFiles, exportFile } from "../../util";
   import { tick } from "svelte";
+  import { getFolderZip } from "./file-manager";
 
   let {
     node = $bindable(),
@@ -81,6 +84,24 @@
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async function exportNodeAsFile() {
+    let blob: Blob;
+    let name: string;
+    if (node.type === "file") {
+      blob = new Blob([new Uint8Array(await readFile(node.path))]);
+      name = node.name;
+    } else {
+      blob = await getFolderZip(node.path);
+      name = node.name;
+      if (node.path === "/") {
+        name = "app";
+      }
+      name += ".zip";
+    }
+
+    await exportFile(blob, name);
   }
 
   async function deleteNode() {
@@ -179,6 +200,10 @@
       <button onclick={copyPath}>
         <CopyIcon size="20" />
         Copy path
+      </button>
+      <button onclick={exportNodeAsFile}>
+        <DownloadIcon size="20" />
+        Export
       </button>
       {#if node.path !== "/" && node.path !== "/index.html"}
         <button onclick={() => showNameForm("rename")}>
