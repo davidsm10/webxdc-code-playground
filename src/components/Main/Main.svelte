@@ -12,10 +12,12 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { setupZenFSDB, setupTemplate, exportResult } from "./main";
+  import { setupZenFSDB, setupTemplate } from "./main";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
+  import { getFolderZip } from "../FileManager/file-manager";
+  import { exportFile } from "../../util";
 
   const rawTypescriptWorker = new Worker(
     new URL("../../typescript/worker.ts", import.meta.url),
@@ -48,6 +50,11 @@
         showActions = false;
       }
     }, 0);
+  }
+
+  async function exportApp() {
+    const appZip = await getFolderZip("/");
+    await exportFile(appZip, "app.xdc");
   }
 </script>
 
@@ -89,7 +96,7 @@
       use:floatingContent
       onfocusout={onActionsFocusOut}
     >
-      <button onclick={exportResult}>
+      <button onclick={exportApp}>
         <Share2Icon size="20px" />
         Export
       </button>
