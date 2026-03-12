@@ -40,9 +40,18 @@
   export async function formatEditorContent() {
     const content = view.state.doc.toString();
     try {
-      const formattedCode = await formatFile(content, path);
+      const cursorOffset = view.state.selection.main.to;
+      const formatResult = await formatFile(content, path, cursorOffset);
       view.dispatch({
-        changes: { from: 0, to: view.state.doc.length, insert: formattedCode },
+        changes: {
+          from: 0,
+          to: view.state.doc.length,
+          insert: formatResult.formatted,
+        },
+        selection: {
+          anchor: formatResult.cursorOffset,
+          head: formatResult.cursorOffset,
+        },
       });
     } catch {}
   }
