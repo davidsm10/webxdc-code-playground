@@ -20,6 +20,7 @@
   import { exportFile } from "../../util";
   import { readdir, writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
+  import type { Node } from "../FileManager/types";
 
   const rawTypescriptWorker = new Worker(
     new URL("../../typescript/worker.ts", import.meta.url),
@@ -69,6 +70,19 @@
 
       openTabs.tabs = template.tabs;
     }
+  }
+
+  function onFSNodeDeleted(nodes: Node[]) {
+    for (const node of nodes) {
+      if (openTabs.tabs[node.path]) {
+        delete openTabs.tabs[node.path];
+      }
+    }
+  }
+
+  function onFSFileNodeClick(node: Node) {
+    openTabs.tabs[node.path] = { name: node.name };
+    activeTab.id = node.path;
   }
 </script>
 
@@ -121,7 +135,10 @@
 
       <div class="content">
         <div hidden={activeTab.id !== "FILES"} style="height: 100%;">
-          <FileManager />
+          <FileManager
+            onDeleted={onFSNodeDeleted}
+            onFileNodeClick={onFSFileNodeClick}
+          />
         </div>
         {#if activeTab.id === "PREVIEW"}
           <Preview entryPath="/index.html" />

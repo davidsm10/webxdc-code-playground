@@ -1,6 +1,8 @@
 <script lang="ts">
   import Entry from "./Entry.svelte";
-  import type { DirNode } from "./types";
+  import type { DirNode, Events } from "./types";
+
+  let events: Events = $props();
 
   const root: DirNode = {
     name: "/",
@@ -10,7 +12,7 @@
 </script>
 
 <div class="container">
-  <Entry dirTree={{ "/": root }} node={root} />
+  <Entry dirTree={{ "/": root }} node={root} {events} />
 </div>
 
 <style>

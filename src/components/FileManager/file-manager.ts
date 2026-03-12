@@ -50,3 +50,24 @@ export async function getFolderZip(path: string) {
     compressionOptions: { level: 9 },
   });
 }
+
+export async function getDirectoryNodes(dirPath: string) {
+  const nodes: Node[] = [];
+  async function scan(currentPath: string) {
+    const entries = await readdir(currentPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const node = {
+        type: entry.isDirectory() ? "dir" : ("file" as "dir" | "file"),
+        name: entry.name,
+        path: resolve(currentPath, entry.name),
+      };
+      nodes.push(node);
+      if (node.type === "dir") {
+        await scan(node.path);
+      }
+    }
+  }
+
+  await scan(dirPath);
+  return nodes;
+}

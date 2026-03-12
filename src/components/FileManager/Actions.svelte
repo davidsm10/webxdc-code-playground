@@ -9,7 +9,7 @@
     ImportIcon,
     Trash,
   } from "@lucide/svelte";
-  import type { DirTree, Node } from "./types";
+  import type { DirTree, Events, Node } from "./types";
   import {
     mkdir,
     exists,
@@ -20,8 +20,7 @@
     readFile,
   } from "@zenfs/core/promises";
   import { resolve, dirname } from "@zenfs/core/path";
-  import { isValidName } from "./file-manager";
-  import { openTabs } from "../Tabs/state.svelte";
+  import { getDirectoryNodes, isValidName } from "./file-manager";
   import { copyText, importFiles, exportFile } from "../../util";
   import { tick } from "svelte";
   import { getFolderZip } from "./file-manager";
@@ -31,11 +30,13 @@
     dirTree = $bindable(),
     children = $bindable(),
     showActions = $bindable(),
+    events,
   }: {
     dirTree: DirTree;
     node: Node;
     children: DirTree;
     showActions: boolean;
+    events: Events;
   } = $props();
 
   let nodeAction: null | "newfile" | "newdir" | "rename" = $state(null);
@@ -62,6 +63,9 @@
         await writeFile(path, "");
       }
       children[path] = { type, name, path };
+      if (events.onCreated) {
+        events.onCreated([{ type, name, path }]);
+      }
       showActions = false;
     } catch (err) {
       console.log(err);
@@ -78,6 +82,9 @@
         }
         await writeFile(path, new Uint8Array(await file.arrayBuffer()));
         children[path] = { type: "file", name: file.name, path };
+        if (events.onCreated) {
+          events.onCreated([{ type: "file", name: file.name, path }]);
+        }
       }
 
       showActions = false;
@@ -106,15 +113,18 @@
 
   async function deleteNode() {
     try {
+      let nodesToDelete: Node[];
       if (node.type === "file") {
+        nodesToDelete = [{ ...node }];
         await unlink(node.path);
-        if (Object.keys(openTabs.tabs).includes(node.path)) {
-          delete openTabs.tabs[node.path];
-        }
       } else {
+        nodesToDelete = await getDirectoryNodes(node.path);
         await rm(node.path, { recursive: true, force: true });
       }
       delete dirTree[node.path];
+      if (events.onDeleted) {
+        events.onDeleted(nodesToDelete);
+      }
       showActions = false;
     } catch (err) {
       console.log(err);
@@ -133,8 +143,12 @@
       }
 
       await rename(node.path, path);
+      const nodeToRename = { ...node };
       dirTree[path] = { type: node.type, name, path };
       delete dirTree[node.path];
+      if (events.onRenamed) {
+        events.onRenamed(nodeToRename, { type: nodeToRename.type, name, path });
+      }
       showActions = false;
     } catch (err) {
       console.log(err);

@@ -7,19 +7,20 @@
   } from "@lucide/svelte";
   import Entry from "./Entry.svelte";
   import Actions from "./Actions.svelte";
-  import type { DirTree, Node } from "./types";
+  import type { DirTree, Events, Node } from "./types";
   import { getDirTree, sortNodes } from "./file-manager";
   import { offset, flip, shift } from "svelte-floating-ui/dom";
   import { createFloatingActions } from "svelte-floating-ui";
   import { tick } from "svelte";
-  import { activeTab, openTabs } from "../Tabs/state.svelte";
 
   let {
     dirTree = $bindable(),
     node = $bindable(),
+    events,
   }: {
     dirTree: DirTree;
     node: Node;
+    events: Events;
   } = $props();
   const depth = $derived(
     node.path === "/" ? 0 : node.path.split("/").length - 1,
@@ -48,8 +49,9 @@
     if (node.type === "dir") {
       open = !open;
     } else {
-      openTabs.tabs[node.path] = { name: node.name };
-      activeTab.id = node.path;
+      if (events.onFileNodeClick) {
+        events.onFileNodeClick({ ...node });
+      }
     }
   }
 
@@ -87,7 +89,7 @@
   <div hidden={!open} style="width: 100%;">
     {#await setChildren() then}
       {#each Object.values(children).sort(sortNodes) as { path }}
-        <Entry bind:dirTree={children} bind:node={children[path]} />
+        <Entry bind:dirTree={children} bind:node={children[path]} {events} />
       {/each}
     {/await}
   </div>
@@ -102,7 +104,7 @@
     onfocusout={onActionsFocusOut}
     bind:this={actionsDiv}
   >
-    <Actions bind:node bind:dirTree bind:children bind:showActions />
+    <Actions bind:node bind:dirTree bind:children bind:showActions {events} />
   </div>
 {/if}
 

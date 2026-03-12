@@ -1,6 +1,8 @@
+export type Path = `/${string}`;
+
 interface BaseNode {
   name: string;
-  path: string;
+  path: Path;
 }
 
 export interface FileNode extends BaseNode {
@@ -14,5 +16,12 @@ export interface DirNode extends BaseNode {
 export type Node = FileNode | DirNode;
 
 export interface DirTree {
-  [path: string]: Node;
+  [path: Path]: Node;
+}
+
+export interface Events {
+  onCreated?: (nodes: Node[]) => void;
+  onRenamed?: (from: Node, to: Node) => void;
+  onDeleted?: (nodes: Node[]) => void;
+  onFileNodeClick?: (node: Node) => void;
 }
