@@ -3,7 +3,6 @@
   import Editor from "../Editor/Editor.svelte";
   import Preview from "../Preview.svelte";
   import FileManager from "../FileManager/FileManager.svelte";
-  import { openTabs, activeTab } from "../Tabs/state.svelte";
   import {
     EllipsisVerticalIcon,
     FilesIcon,
@@ -12,7 +11,7 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { setupZenFSDB } from "./main";
+  import { generalDB, setupZenFSDB } from "./main";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
@@ -21,6 +20,12 @@
   import { readdir, writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
+  import type { TabsArray } from "../Tabs/types";
+
+  // svelte-ignore non_reactive_update
+  let tabsComp: Tabs;
+  let tabs: TabsArray = $state.raw([]);
+  let activeTab: string | null = $state("/index.html");
 
   const rawTypescriptWorker = new Worker(
     new URL("../../typescript/worker.ts", import.meta.url),
@@ -68,21 +73,34 @@
         await writeFile(path, content);
       }
 
-      openTabs.tabs = template.tabs;
+      tabs = template.tabs;
     }
   }
 
   function onFSNodeDeleted(nodes: Node[]) {
     for (const node of nodes) {
-      if (openTabs.tabs[node.path]) {
-        delete openTabs.tabs[node.path];
-      }
+      tabsComp.closeTab(node.path);
     }
   }
 
   function onFSFileNodeClick(node: Node) {
-    openTabs.tabs[node.path] = { name: node.name };
-    activeTab.id = node.path;
+    tabsComp.addTab(node.path, { name: node.name });
+    activeTab = node.path;
+  }
+
+  async function onActiveTabChange(tabId: string | null) {
+    await generalDB.setItem("activeTab", tabId);
+  }
+
+  async function onTabsChange(tabs: TabsArray) {
+    await generalDB.setItem("tabs", tabs);
+  }
+
+  async function setSavedTabs() {
+    const savedTabs = await generalDB.getItem<TabsArray>("tabs");
+    const savedActiveTab = await generalDB.getItem<string>("activeTab");
+    if (savedTabs) tabs = savedTabs;
+    if (savedActiveTab) activeTab = savedActiveTab;
   }
 </script>
 
@@ -91,17 +109,25 @@
     {#await setupTemplate() then}
       <div class="header">
         <button
-          class={activeTab.id === "FILES" ? "tab active" : "tab"}
-          onclick={() => (activeTab.id = "FILES")}
+          class={activeTab === "FILES" ? "tab active" : "tab"}
+          onclick={() => (activeTab = "FILES")}
           title="Files"
         >
           <FilesIcon size="20" />
         </button>
-        <Tabs />
+        {#await setSavedTabs() then}
+          <Tabs
+            bind:tabs
+            bind:activeTab
+            bind:this={tabsComp}
+            {onActiveTabChange}
+            {onTabsChange}
+          />
+        {/await}
         <div class="panel-right">
           <button
-            class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
-            onclick={() => (activeTab.id = "PREVIEW")}
+            class={activeTab === "PREVIEW" ? "tab active" : "tab"}
+            onclick={() => (activeTab = "PREVIEW")}
             title="Preview"
           >
             <PlayIcon size="20" />
@@ -134,17 +160,17 @@
       {/if}
 
       <div class="content">
-        <div hidden={activeTab.id !== "FILES"} style="height: 100%;">
+        <div hidden={activeTab !== "FILES"} style="height: 100%;">
           <FileManager
             onDeleted={onFSNodeDeleted}
             onFileNodeClick={onFSFileNodeClick}
           />
         </div>
-        {#if activeTab.id === "PREVIEW"}
+        {#if activeTab === "PREVIEW"}
           <Preview entryPath="/index.html" />
         {/if}
-        {#each Object.keys(openTabs.tabs) as path}
-          <div hidden={path !== activeTab.id} style="height: 100%;">
+        {#each tabs as [path] (path)}
+          <div hidden={path !== activeTab} style="height: 100%;">
             <Editor {path} {typescriptWorker} />
           </div>
         {/each}

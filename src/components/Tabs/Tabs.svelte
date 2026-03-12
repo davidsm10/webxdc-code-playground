@@ -1,89 +1,96 @@
 <script lang="ts">
-  import { openTabs, activeTab } from "./state.svelte";
-  import type { OpenTabs } from "./types";
   import { XIcon } from "@lucide/svelte";
-  import { generalDB } from "../Main/main";
+  import type { Tabs, Tab, TabsArray } from "./types";
+  import { SvelteMap } from "svelte/reactivity";
 
-  function onTabClick(tabId: string) {
-    activeTab.id = tabId;
+  let {
+    tabs: tabsArray = $bindable(),
+    activeTab = $bindable(),
+    onTabsChange = undefined,
+    onActiveTabChange = undefined,
+  }: {
+    tabs: TabsArray;
+    activeTab: string | null;
+    onTabsChange?: (tabs: TabsArray) => void;
+    onActiveTabChange?: (tabId: string | null) => void;
+  } = $props();
+
+  const tabs: Tabs = new SvelteMap(tabsArray);
+
+  export function setActiveTab(tabId: string) {
+    if (tabs.has(tabId)) {
+      activeTab = tabId;
+    }
+  }
+
+  export function addTab(tabId: string, tab: Tab) {
+    tabs.set(tabId, tab);
+  }
+
+  export function closeTab(tabId: string) {
+    if (tabs.has(tabId)) {
+      tabs.delete(tabId);
+    }
+  }
+
+  function onCloseTabBtnClick(tabId: string) {
+    if (tabs.size > 1) {
+      const tabsId = Array.from(tabs.keys());
+      const activeTabIndex = tabsId.indexOf(tabId);
+      activeTab = tabsId[activeTabIndex + 1] || tabsId[activeTabIndex - 1];
+    } else {
+      activeTab = "FILES";
+    }
+    closeTab(tabId);
   }
 
   function onTabKeydown(e: KeyboardEvent, tabId: string) {
     if (e.key === "Enter" || e.key === " ") {
-      activeTab.id = tabId;
-    }
-  }
-
-  function onCloseTabClick(tabId: string) {
-    const openTabsIds = Object.keys(openTabs.tabs);
-    if (openTabsIds.length > 1) {
-      const currentTabIndex = openTabsIds.indexOf(tabId);
-      activeTab.id =
-        openTabsIds[currentTabIndex + 1] || openTabsIds[currentTabIndex - 1];
-    } else {
-      activeTab.id = "FILES";
-    }
-    delete openTabs.tabs[tabId];
-  }
-
-  let setSavedTabsPromise = setSavedTabs();
-  async function setSavedTabs() {
-    const savedOpenTabs = await generalDB.getItem<OpenTabs>("tabs");
-    const savedActiveTab = await generalDB.getItem<string>("activeTab");
-
-    if (savedOpenTabs) {
-      openTabs.tabs = savedOpenTabs;
-    }
-
-    if (savedActiveTab) {
-      activeTab.id = savedActiveTab;
+      setActiveTab(tabId);
     }
   }
 
   $effect(() => {
-    //Just to trigger this effect
-    Object.keys(openTabs.tabs);
-    setSavedTabsPromise.then(() => {
-      generalDB.setItem("tabs", $state.snapshot(openTabs).tabs);
-    });
+    if (onTabsChange) {
+      const newTabsArray = Array.from(tabs);
+      onTabsChange(newTabsArray);
+      tabsArray = newTabsArray;
+    }
   });
 
   $effect(() => {
-    activeTab.id;
-    setSavedTabsPromise.then(() => {
-      generalDB.setItem("activeTab", $state.snapshot(activeTab).id);
-    });
+    if (onActiveTabChange) {
+      onActiveTabChange(activeTab);
+    }
   });
 </script>
 
 <div class="tabs">
-  {#await setSavedTabsPromise then}
-    {#each Object.entries(openTabs.tabs) as [id, tab]}
-      <div
-        class={activeTab.id === id ? "tab active" : "tab"}
-        role="button"
-        tabindex="0"
-        onclick={() => onTabClick(id)}
-        onkeydown={(e) => onTabKeydown(e, id)}
-      >
-        <small>
-          {tab.name}
-        </small>
-        {#if activeTab.id === id}
-          <button
-            aria-label="Close tab"
-            onclick={(e) => {
-              e.stopPropagation();
-              onCloseTabClick(id);
-            }}
-            class="close-tab-btn"
-          >
-            <XIcon size="20" />
-          </button>
-        {/if}
-      </div>
-    {/each}
-  {/await}
+  {#each tabsArray as [id, tab] (id)}
+    <div
+      class={activeTab === id ? "tab active" : "tab"}
+      role="button"
+      tabindex="0"
+      onclick={() => setActiveTab(id)}
+      onkeydown={(e) => onTabKeydown(e, id)}
+    >
+      <small>
+        {tab.name}
+      </small>
+      {#if activeTab === id}
+        <button
+          aria-label="Close tab"
+          onclick={(e) => {
+            e.stopPropagation();
+            onCloseTabBtnClick(id);
+          }}
+          class="close-tab-btn"
+        >
+          <XIcon size="20" />
+        </button>
+      {/if}
+    </div>
+  {/each}
 </div>
 
 <style>

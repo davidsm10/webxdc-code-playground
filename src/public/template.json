@@ -1,14 +1,23 @@
 {
   "files": ["/index.html", "/style.css", "/script.js", "/manifest.toml"],
-  "tabs": {
-    "/index.html": {
-      "name": "index.html"
-    },
-    "/script.js": {
-      "name": "script.js"
-    },
-    "/manifest.toml": {
-      "name": "manifest.toml"
-    }
-  }
+  "tabs": [
+    [
+      "/index.html",
+      {
+        "name": "index.html"
+      }
+    ],
+    [
+      "/script.js",
+      {
+        "name": "script.js"
+      }
+    ],
+    [
+      "/manifest.toml",
+      {
+        "name": "manifest.toml"
+      }
+    ]
+  ]
 }
