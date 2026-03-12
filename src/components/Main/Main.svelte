@@ -17,7 +17,7 @@
   import { tick } from "svelte";
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
-  import { writeFile } from "@zenfs/core/promises";
+  import { readFile, writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
   import type { TabsArray } from "../Tabs/types";
@@ -103,6 +103,10 @@
     if (savedTabs) tabs = savedTabs;
     if (savedActiveTab) activeTab = savedActiveTab;
   }
+
+  async function onEditorValueChanged(path: string, value: string) {
+    await writeFile(path, value);
+  }
 </script>
 
 <div class="container">
@@ -172,7 +176,14 @@
         {/if}
         {#each tabs as [path] (path)}
           <div hidden={path !== activeTab} style="height: 100%;">
-            <Editor {path} {typescriptWorker} />
+            {#await readFile(path, { encoding: "utf-8" }) then initialValue}
+              <Editor
+                {path}
+                {initialValue}
+                {typescriptWorker}
+                onChange={(value) => onEditorValueChanged(path, value)}
+              />
+            {/await}
           </div>
         {/each}
       </div>

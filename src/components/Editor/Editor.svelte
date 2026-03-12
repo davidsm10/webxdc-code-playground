@@ -2,23 +2,28 @@
   import { EditorView } from "codemirror";
   import { onMount, onDestroy } from "svelte";
   import { generalExtensions, getLanguageExtensions } from "./extensions";
-  import { writeFile, readFile } from "@zenfs/core/promises";
   import { type WorkerShape } from "@valtown/codemirror-ts/worker";
   import { keymap } from "@codemirror/view";
-  import { formatEditorContent } from "./editor";
+  import { formatFile } from "../../prettier";
 
   let {
     path,
+    initialValue,
+    onChange,
     typescriptWorker,
-  }: { path: string; typescriptWorker: WorkerShape } = $props();
+  }: {
+    path: string;
+    initialValue: string;
+    onChange?: (value: string) => void;
+    typescriptWorker: WorkerShape;
+  } = $props();
 
   // svelte-ignore non_reactive_update
   let container: HTMLDivElement;
   let view: EditorView;
 
   onMount(async () => {
-    const savedDoc = await readFile(path, { encoding: "utf-8" });
-    view = createEditorView(savedDoc);
+    view = createEditorView(initialValue);
     view.contentDOM.setAttribute("spellcheck", "false");
     view.contentDOM.setAttribute("autocorrect", "off");
     view.contentDOM.setAttribute("autocapitalize", "off");
@@ -29,12 +34,22 @@
     view.destroy();
   });
 
+  export async function formatEditorContent() {
+    const content = view.state.doc.toString();
+    try {
+      const formattedCode = await formatFile(content, path);
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: formattedCode },
+      });
+    } catch {}
+  }
+
   function getFormatKeymap() {
     return keymap.of([
       {
         key: "Alt-Shift-f",
-        run: (view) => {
-          formatEditorContent(view, path);
+        run: () => {
+          formatEditorContent();
           return true;
         },
       },
@@ -60,7 +75,9 @@
           }
         }
         if (hasChanged) {
-          writeFile(path, view.state.doc.toString());
+          if (onChange) {
+            onChange(view.state.doc.toString());
+          }
         }
       },
     });
