@@ -10,11 +10,13 @@
     path,
     initialValue,
     onChange,
+    onDestroy: onDestroyComp,
     typescriptWorker,
   }: {
     path: string;
     initialValue: string;
     onChange?: (value: string) => void;
+    onDestroy?: () => void;
     typescriptWorker: WorkerShape;
   } = $props();
 
@@ -32,6 +34,7 @@
 
   onDestroy(() => {
     view.destroy();
+    if (onDestroyComp) onDestroyComp();
   });
 
   export async function formatEditorContent() {

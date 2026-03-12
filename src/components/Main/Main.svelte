@@ -4,6 +4,7 @@
   import Preview from "../Preview.svelte";
   import FileManager from "../FileManager/FileManager.svelte";
   import {
+    CodeXmlIcon,
     EllipsisVerticalIcon,
     FilesIcon,
     PlayIcon,
@@ -26,6 +27,8 @@
   let tabsComp: Tabs;
   let tabs: TabsArray = $state.raw([]);
   let activeTab: string | null = $state("/index.html");
+
+  let editors: { [path: string]: Editor } = {};
 
   const rawTypescriptWorker = new Worker(
     new URL("../../typescript/worker.ts", import.meta.url),
@@ -107,6 +110,13 @@
   async function onEditorValueChanged(path: string, value: string) {
     await writeFile(path, value);
   }
+
+  function formatActiveTabContent() {
+    if (activeTab) {
+      editors[activeTab].formatEditorContent();
+    }
+    showActions = false;
+  }
 </script>
 
 <div class="container">
@@ -159,8 +169,14 @@
         >
           <button onclick={exportApp}>
             <Share2Icon size="20px" />
-            Export
+            Export app
           </button>
+          {#if activeTab !== "FILES" && activeTab !== "PREVIEW"}
+            <button onclick={formatActiveTabContent}>
+              <CodeXmlIcon size="20" />
+              Format file
+            </button>
+          {/if}
         </div>
       {/if}
 
@@ -182,6 +198,8 @@
                 {initialValue}
                 {typescriptWorker}
                 onChange={(value) => onEditorValueChanged(path, value)}
+                onDestroy={() => delete editors[path]}
+                bind:this={editors[path]}
               />
             {/await}
           </div>
