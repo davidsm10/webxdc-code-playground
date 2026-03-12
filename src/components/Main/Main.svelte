@@ -12,12 +12,14 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { setupZenFSDB, setupTemplate } from "./main";
+  import { setupZenFSDB } from "./main";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
+  import { readdir, writeFile } from "@zenfs/core/promises";
+  import type { Template } from "./types";
 
   const rawTypescriptWorker = new Worker(
     new URL("../../typescript/worker.ts", import.meta.url),
@@ -56,56 +58,68 @@
     const appZip = await getFolderZip("/");
     await exportFile(appZip, "app.xdc");
   }
+
+  async function setupTemplate() {
+    if (!(await readdir("/")).length) {
+      const template: Template = await (await fetch("template.json")).json();
+      for (const path of template.files) {
+        const content = await (await fetch("template" + path)).text();
+        await writeFile(path, content);
+      }
+
+      openTabs.tabs = template.tabs;
+    }
+  }
 </script>
 
 <div class="container">
-  <div class="header">
-    <button
-      class={activeTab.id === "FILES" ? "tab active" : "tab"}
-      onclick={() => (activeTab.id = "FILES")}
-      title="Files"
-    >
-      <FilesIcon size="20" />
-    </button>
-    <Tabs />
-    <div class="panel-right">
-      <button
-        class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
-        onclick={() => (activeTab.id = "PREVIEW")}
-        title="Preview"
-      >
-        <PlayIcon size="20" />
-      </button>
-      <button
-        class="tab"
-        title="More"
-        use:floatingRef
-        onclick={onShowActionsClick}
-      >
-        <EllipsisVerticalIcon size="20" />
-      </button>
-    </div>
-  </div>
+  {#await setupZenFSDB() then}
+    {#await setupTemplate() then}
+      <div class="header">
+        <button
+          class={activeTab.id === "FILES" ? "tab active" : "tab"}
+          onclick={() => (activeTab.id = "FILES")}
+          title="Files"
+        >
+          <FilesIcon size="20" />
+        </button>
+        <Tabs />
+        <div class="panel-right">
+          <button
+            class={activeTab.id === "PREVIEW" ? "tab active" : "tab"}
+            onclick={() => (activeTab.id = "PREVIEW")}
+            title="Preview"
+          >
+            <PlayIcon size="20" />
+          </button>
+          <button
+            class="tab"
+            title="More"
+            use:floatingRef
+            onclick={onShowActionsClick}
+          >
+            <EllipsisVerticalIcon size="20" />
+          </button>
+        </div>
+      </div>
 
-  {#if showActions}
-    <div
-      class="actions"
-      role="menu"
-      tabindex="-1"
-      bind:this={actionsDiv}
-      use:floatingContent
-      onfocusout={onActionsFocusOut}
-    >
-      <button onclick={exportApp}>
-        <Share2Icon size="20px" />
-        Export
-      </button>
-    </div>
-  {/if}
+      {#if showActions}
+        <div
+          class="actions"
+          role="menu"
+          tabindex="-1"
+          bind:this={actionsDiv}
+          use:floatingContent
+          onfocusout={onActionsFocusOut}
+        >
+          <button onclick={exportApp}>
+            <Share2Icon size="20px" />
+            Export
+          </button>
+        </div>
+      {/if}
 
-  <div class="content">
-    {#await setupZenFSDB() then}
-      {#await setupTemplate() then}
+      <div class="content">
         <div hidden={activeTab.id !== "FILES"} style="height: 100%;">
           <FileManager />
         </div>
@@ -117,9 +131,9 @@
             <Editor {path} {typescriptWorker} />
           </div>
         {/each}
-      {/await}
+      </div>
     {/await}
-  </div>
+  {/await}
 </div>
 
 <style>
