@@ -17,7 +17,7 @@
   import { tick } from "svelte";
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
-  import { readdir, writeFile } from "@zenfs/core/promises";
+  import { writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
   import type { TabsArray } from "../Tabs/types";
@@ -66,7 +66,7 @@
   }
 
   async function setupTemplate() {
-    if (!(await readdir("/")).length) {
+    if (!(await generalDB.getItem("templateSet"))) {
       const template: Template = await (await fetch("template.json")).json();
       for (const path of template.files) {
         const content = await (await fetch("template" + path)).text();
@@ -74,6 +74,7 @@
       }
 
       tabs = template.tabs;
+      await generalDB.setItem("templateSet", true);
     }
   }
 
