@@ -9,9 +9,8 @@
     "dev:pwa": "vite --config pwa.vite.config.ts",
     "build:pwa": "vite build --config pwa.vite.config.ts",
     "preview:pwa": "vite preview --config pwa.vite.config.ts",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
-    "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json && prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
