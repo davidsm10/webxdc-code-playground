@@ -12,7 +12,7 @@
   } from "@lucide/svelte";
   import { wrap } from "comlink";
   import type { WorkerShape } from "@valtown/codemirror-ts/worker";
-  import { generalDB, setupZenFSDB } from "./main";
+  import { generalDB, setupZenFSDB } from "../../dbs";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
