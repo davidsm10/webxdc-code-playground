@@ -20,8 +20,8 @@ export interface DirTree {
 }
 
 export interface Events {
-  onCreated?: (nodes: Node[]) => void;
+  onCreated?: (node: Node) => void;
   onRenamed?: (from: Node, to: Node) => void;
-  onDeleted?: (nodes: Node[]) => void;
+  onDeleted?: (node: Node) => void;
   onFileNodeClick?: (node: Node) => void;
 }

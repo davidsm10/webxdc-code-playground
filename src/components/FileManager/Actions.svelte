@@ -20,7 +20,7 @@
     readFile,
   } from "@zenfs/core/promises";
   import { resolve, dirname } from "@zenfs/core/path";
-  import { getDirectoryNodes, isValidName } from "./file-manager";
+  import { isValidName } from "./file-manager";
   import { copyText, importFiles, exportFile } from "../../util";
   import { tick } from "svelte";
   import { getFolderZip } from "./file-manager";
@@ -64,7 +64,7 @@
       }
       reloadCurrentFolder();
       if (events.onCreated) {
-        events.onCreated([{ type, name, path }]);
+        events.onCreated({ type, name, path });
       }
       showActions = false;
     } catch (err) {
@@ -83,7 +83,7 @@
         await writeFile(path, new Uint8Array(await file.arrayBuffer()));
         reloadCurrentFolder();
         if (events.onCreated) {
-          events.onCreated([{ type: "file", name: file.name, path }]);
+          events.onCreated({ type: "file", name: file.name, path });
         }
       }
 
@@ -113,17 +113,14 @@
 
   async function deleteNode() {
     try {
-      let nodesToDelete: Node[];
       if (node.type === "file") {
-        nodesToDelete = [{ ...node }];
         await unlink(node.path);
       } else {
-        nodesToDelete = await getDirectoryNodes(node.path);
         await rm(node.path, { recursive: true, force: true });
       }
       reloadParentFolder();
       if (events.onDeleted) {
-        events.onDeleted(nodesToDelete);
+        events.onDeleted(node);
       }
       showActions = false;
     } catch (err) {
@@ -144,9 +141,8 @@
 
       await rename(node.path, path);
       reloadParentFolder();
-      const nodeToRename = { ...node };
       if (events.onRenamed) {
-        events.onRenamed(nodeToRename, { type: nodeToRename.type, name, path });
+        events.onRenamed(node, { type: node.type, name, path });
       }
       showActions = false;
     } catch (err) {

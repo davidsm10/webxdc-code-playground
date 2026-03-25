@@ -22,6 +22,7 @@
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
   import type { TabsArray } from "../Tabs/types";
+  import { relative, isAbsolute } from "@zenfs/core/path";
 
   // svelte-ignore non_reactive_update
   let tabsComp: Tabs;
@@ -85,10 +86,18 @@
     }
   }
 
-  function onFSNodeDeleted(nodes: Node[]) {
-    for (const node of nodes) {
-      tabsComp.closeTab(node.path);
-    }
+  function onFSNodeDeleted(node: Node) {
+    tabs.forEach(([path]) => {
+      if (path === node.path) tabsComp.closeTab(path);
+      const relativePath = relative(node.path, path);
+      if (
+        relativePath &&
+        !relativePath.startsWith("..") &&
+        !isAbsolute(relativePath)
+      ) {
+        tabsComp.closeTab(path);
+      }
+    });
   }
 
   function onFSFileNodeClick(node: Node) {
