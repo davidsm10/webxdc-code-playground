@@ -14,18 +14,18 @@
   import { tick } from "svelte";
 
   let {
-    dirTree = $bindable(),
-    node = $bindable(),
+    node,
+    reloadParentFolder,
     events,
   }: {
-    dirTree: DirTree;
     node: Node;
+    reloadParentFolder: () => void;
     events: Events;
   } = $props();
   const depth = $derived(
     node.path === "/" ? 0 : node.path.split("/").length - 1,
   );
-  let children: DirTree = $state({});
+  let children: DirTree = $state.raw({});
 
   async function setChildren() {
     if (node.type === "dir") {
@@ -92,8 +92,8 @@
 {#if node.type === "dir"}
   <div hidden={!open} style="width: 100%;">
     {#await setChildren() then}
-      {#each Object.values(children).sort(sortNodes) as { path }}
-        <Entry bind:dirTree={children} bind:node={children[path]} {events} />
+      {#each Object.values(children).sort(sortNodes) as node}
+        <Entry {node} {events} reloadParentFolder={setChildren} />
       {/each}
     {/await}
   </div>
@@ -108,7 +108,13 @@
     onfocusout={onActionsFocusOut}
     bind:this={actionsDiv}
   >
-    <Actions bind:node bind:dirTree bind:children bind:showActions {events} />
+    <Actions
+      {node}
+      {reloadParentFolder}
+      reloadCurrentFolder={setChildren}
+      bind:showActions
+      {events}
+    />
   </div>
 {/if}
 

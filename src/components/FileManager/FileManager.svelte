@@ -12,7 +12,7 @@
 </script>
 
 <div class="container">
-  <Entry dirTree={{ "/": root }} node={root} {events} />
+  <Entry node={root} {events} reloadParentFolder={() => false} />
 </div>
 
 <style>

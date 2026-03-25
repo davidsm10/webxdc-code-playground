@@ -9,7 +9,7 @@
     ImportIcon,
     Trash,
   } from "@lucide/svelte";
-  import type { DirTree, Events, Node } from "./types";
+  import type { Events, Node } from "./types";
   import {
     mkdir,
     exists,
@@ -26,15 +26,15 @@
   import { getFolderZip } from "./file-manager";
 
   let {
-    node = $bindable(),
-    dirTree = $bindable(),
-    children = $bindable(),
+    node,
+    reloadParentFolder,
+    reloadCurrentFolder,
     showActions = $bindable(),
     events,
   }: {
-    dirTree: DirTree;
     node: Node;
-    children: DirTree;
+    reloadParentFolder: () => void;
+    reloadCurrentFolder: () => void;
     showActions: boolean;
     events: Events;
   } = $props();
@@ -62,7 +62,7 @@
       } else {
         await writeFile(path, "");
       }
-      children[path] = { type, name, path };
+      reloadCurrentFolder();
       if (events.onCreated) {
         events.onCreated([{ type, name, path }]);
       }
@@ -81,7 +81,7 @@
           continue;
         }
         await writeFile(path, new Uint8Array(await file.arrayBuffer()));
-        children[path] = { type: "file", name: file.name, path };
+        reloadCurrentFolder();
         if (events.onCreated) {
           events.onCreated([{ type: "file", name: file.name, path }]);
         }
@@ -121,7 +121,7 @@
         nodesToDelete = await getDirectoryNodes(node.path);
         await rm(node.path, { recursive: true, force: true });
       }
-      delete dirTree[node.path];
+      reloadParentFolder();
       if (events.onDeleted) {
         events.onDeleted(nodesToDelete);
       }
@@ -143,9 +143,8 @@
       }
 
       await rename(node.path, path);
+      reloadParentFolder();
       const nodeToRename = { ...node };
-      dirTree[path] = { type: node.type, name, path };
-      delete dirTree[node.path];
       if (events.onRenamed) {
         events.onRenamed(nodeToRename, { type: nodeToRename.type, name, path });
       }
