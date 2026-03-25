@@ -97,7 +97,7 @@
     let blob: Blob;
     let name: string;
     if (node.type === "file") {
-      blob = new Blob([new Uint8Array(await readFile(node.path))]);
+      blob = new Blob([(await readFile(node.path)) as Uint8Array<ArrayBuffer>]);
       name = node.name;
     } else {
       blob = await getFolderZip(node.path);
