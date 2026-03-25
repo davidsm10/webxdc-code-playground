@@ -15,10 +15,6 @@ export interface DirNode extends BaseNode {
 
 export type Node = FileNode | DirNode;
 
-export interface DirTree {
-  [path: Path]: Node;
-}
-
 export interface Events {
   onCreated?: (node: Node) => void;
   onRenamed?: (from: Node, to: Node) => void;

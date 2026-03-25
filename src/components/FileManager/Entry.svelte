@@ -7,8 +7,8 @@
   } from "@lucide/svelte";
   import Entry from "./Entry.svelte";
   import Actions from "./Actions.svelte";
-  import type { DirTree, Events, Node } from "./types";
-  import { getDirTree, sortNodes } from "./file-manager";
+  import type { Events, Node } from "./types";
+  import { getDirectoryNodes, sortNodes } from "./file-manager";
   import { offset, flip, shift } from "svelte-floating-ui/dom";
   import { createFloatingActions } from "svelte-floating-ui";
   import { tick } from "svelte";
@@ -25,11 +25,11 @@
   const depth = $derived(
     node.path === "/" ? 0 : node.path.split("/").length - 1,
   );
-  let children: DirTree = $state.raw({});
+  let children: Node[] = $state.raw([]);
 
   async function setChildren() {
     if (node.type === "dir") {
-      children = await getDirTree(node.path);
+      children = await getDirectoryNodes(node.path);
     }
   }
 
@@ -92,7 +92,7 @@
 {#if node.type === "dir"}
   <div hidden={!open} style="width: 100%;">
     {#await setChildren() then}
-      {#each Object.values(children).sort(sortNodes) as node}
+      {#each children.sort(sortNodes) as node}
         <Entry {node} {events} reloadParentFolder={setChildren} />
       {/each}
     {/await}

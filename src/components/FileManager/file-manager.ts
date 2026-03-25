@@ -1,21 +1,7 @@
 import { readdir, readFile } from "@zenfs/core/promises";
-import type { DirTree, Node } from "./types";
+import type { Node } from "./types";
 import { resolve } from "@zenfs/core/path";
 import JSZip from "jszip";
-
-export async function getDirTree(path: string): Promise<DirTree> {
-  const entries = await readdir(path, { withFileTypes: true });
-  let tree: DirTree = {};
-  entries.forEach((entry) => {
-    const nodePath = resolve(path, entry.name);
-    tree[nodePath] = {
-      name: entry.name,
-      path: resolve(path, entry.name),
-      type: entry.isDirectory() ? "dir" : "file",
-    };
-  });
-  return tree;
-}
 
 export function sortNodes(a: Node, b: Node) {
   if (a.type !== b.type) {
@@ -51,23 +37,11 @@ export async function getFolderZip(path: string) {
   });
 }
 
-export async function getDirectoryNodes(dirPath: string) {
-  const nodes: Node[] = [];
-  async function scan(currentPath: string) {
-    const entries = await readdir(currentPath, { withFileTypes: true });
-    for (const entry of entries) {
-      const node = {
-        type: entry.isDirectory() ? "dir" : ("file" as "dir" | "file"),
-        name: entry.name,
-        path: resolve(currentPath, entry.name),
-      };
-      nodes.push(node);
-      if (node.type === "dir") {
-        await scan(node.path);
-      }
-    }
-  }
-
-  await scan(dirPath);
-  return nodes;
+export async function getDirectoryNodes(path: string): Promise<Node[]> {
+  const entries = await readdir(path, { withFileTypes: true });
+  return entries.map((entry) => ({
+    type: entry.isDirectory() ? "dir" : "file",
+    name: entry.name,
+    path: resolve(path, entry.name),
+  }));
 }
