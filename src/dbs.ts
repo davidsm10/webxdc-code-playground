@@ -6,9 +6,9 @@ export const generalDB = localforage.createInstance({
   name: "code-playground-general-database",
 });
 
-export const setupZenFSDB = async () => {
+export async function setupZenFSDB() {
   await configureSingle({
     backend: IndexedDB,
     storeName: "code-playground-fs-database",
   });
-};
+}

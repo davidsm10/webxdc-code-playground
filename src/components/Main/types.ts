@@ -1,4 +1,4 @@
 export interface Template {
   files: string[];
-  tabs: [string, {name: string}][];
+  tabs: [string, { name: string }][];
 }

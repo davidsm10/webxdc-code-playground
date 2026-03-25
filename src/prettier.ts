@@ -6,12 +6,12 @@ import babel from "prettier/plugins/babel";
 
 export async function formatFile(
   source: string,
-  path: string,
+  filepath: string,
   cursorOffset: number,
 ) {
   return await formatWithCursor(source, {
-    filepath: path,
-    plugins: [html, postcss, babel, estree],
+    filepath,
     cursorOffset,
+    plugins: [html, postcss, babel, estree],
   });
 }

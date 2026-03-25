@@ -22,6 +22,7 @@
     reloadParentFolder: () => void;
     events: Events;
   } = $props();
+
   const depth = $derived(
     node.path === "/" ? 0 : node.path.split("/").length - 1,
   );
