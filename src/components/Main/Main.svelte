@@ -1,13 +1,11 @@
 <script lang="ts">
   import Tabs from "../Tabs/Tabs.svelte";
   import Editor from "../Editor/Editor.svelte";
-  import Preview from "../Preview.svelte";
   import FileManager from "../FileManager/FileManager.svelte";
   import {
     CodeXmlIcon,
     EllipsisVerticalIcon,
     FilesIcon,
-    PlayIcon,
     Share2Icon,
   } from "@lucide/svelte";
   import { wrap } from "comlink";
@@ -154,13 +152,6 @@
         {/await}
         <div class="panel-right">
           <button
-            class={activeTab === "PREVIEW" ? "tab active" : "tab"}
-            onclick={() => (activeTab = "PREVIEW")}
-            title="Preview"
-          >
-            <PlayIcon size="20" />
-          </button>
-          <button
             class="tab"
             title="More"
             use:floatingRef
@@ -184,7 +175,7 @@
             <Share2Icon size="20px" />
             Export app
           </button>
-          {#if activeTab !== "FILES" && activeTab !== "PREVIEW"}
+          {#if activeTab !== "FILES"}
             <button onclick={formatActiveTabContent}>
               <CodeXmlIcon size="20" />
               Format file
@@ -200,9 +191,6 @@
             onFileNodeClick={onFSFileNodeClick}
           />
         </div>
-        {#if activeTab === "PREVIEW"}
-          <Preview entryPath="/index.html" />
-        {/if}
         {#each tabs as [path] (path)}
           <div hidden={path !== activeTab} style="height: 100%;">
             {#await readFile(path, { encoding: "utf-8" }) then initialValue}
