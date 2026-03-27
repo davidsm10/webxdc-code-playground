@@ -140,17 +140,19 @@
       </div>
       <div class="main">
         <div class="header">
-          <button
-            class="tab"
-            onclick={() => (showFileManager = !showFileManager)}
-            title="Files"
-          >
-            {#if showFileManager}
-              <ArrowLeftIcon />
-            {:else}
-              <FilesIcon size="20" />
-            {/if}
-          </button>
+          <div class="panel-left">
+            <button
+              class="button"
+              onclick={() => (showFileManager = !showFileManager)}
+              title="Files"
+            >
+              {#if showFileManager}
+                <ArrowLeftIcon />
+              {:else}
+                <FilesIcon size="20" />
+              {/if}
+            </button>
+          </div>
           {#await setSavedTabs() then}
             <Tabs
               bind:tabs
@@ -162,7 +164,7 @@
           {/await}
           <div class="panel-right">
             <button
-              class="tab"
+              class="button"
               title="More"
               use:floatingRef
               onclick={onShowActionsClick}
@@ -247,14 +249,34 @@
     height: calc(100% - 45px);
   }
 
-  .panel-right {
+  .panel-right,
+  .panel-left {
     height: 100%;
     display: flex;
-    border-left: 0.5px solid #3a3f4b;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
-  .header .tab {
-    padding: 10px;
+  .header .button {
+    height: 80%;
+    border: none;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #abb2bf;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .header .button:hover,
+  .header .button:focus {
+    background-color: #3a3f4b;
+    outline-style: none;
+  }
+
+  .header .button:active {
+    background-color: #535a6d;
   }
 
   .actions {
