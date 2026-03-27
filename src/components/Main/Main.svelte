@@ -26,7 +26,7 @@
   // svelte-ignore non_reactive_update
   let tabsComp: Tabs;
   let tabs: TabsArray = $state.raw([]);
-  let activeTab: string | null = $state("/index.html");
+  let activeTab: string | null = $state(null);
 
   let editors: { [path: string]: Editor } = {};
 
@@ -79,6 +79,7 @@
       }
 
       tabs = template.tabs;
+      activeTab = "/index.html";
       await generalDB.setItem("templateSet", true);
     }
   }
@@ -173,14 +174,16 @@
                 <Share2Icon size="20px" />
               </button>
             {/if}
-            <button
-              class="button"
-              title="More"
-              use:floatingRef
-              onclick={onShowActionsClick}
-            >
-              <EllipsisVerticalIcon size="20" />
-            </button>
+            {#if activeTab !== null}
+              <button
+                class="button"
+                title="More"
+                use:floatingRef
+                onclick={onShowActionsClick}
+              >
+                <EllipsisVerticalIcon size="20" />
+              </button>
+            {/if}
           </div>
         </div>
 
@@ -193,12 +196,10 @@
             use:floatingContent
             onfocusout={onActionsFocusOut}
           >
-            {#if activeTab !== null}
-              <button onclick={formatActiveTabContent}>
-                <CodeXmlIcon size="20" />
-                Format file
-              </button>
-            {/if}
+            <button onclick={formatActiveTabContent}>
+              <CodeXmlIcon size="20" />
+              Format file
+            </button>
           </div>
         {/if}
 
