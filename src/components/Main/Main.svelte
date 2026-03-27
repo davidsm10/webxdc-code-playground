@@ -57,13 +57,9 @@
     actionsDiv.focus();
   }
 
-  function onActionsFocusOut(
-    event: FocusEvent & {
-      currentTarget: EventTarget & HTMLDivElement;
-    },
-  ) {
+  function onActionsFocusOut() {
     setTimeout(() => {
-      if (!actionsDiv.contains(event.relatedTarget as HTMLElement)) {
+      if (!actionsDiv.contains(document.activeElement)) {
         showActions = false;
       }
     }, 0);
