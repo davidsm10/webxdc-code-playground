@@ -305,6 +305,7 @@
     padding: 5px;
     cursor: pointer;
     color: #abb2bf;
+    align-items: center;
     background-color: transparent;
     border-bottom: 0.1px solid #3a3f4b;
   }
