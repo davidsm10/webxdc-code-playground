@@ -39,7 +39,7 @@
       const activeTabIndex = tabsId.indexOf(tabId);
       activeTab = tabsId[activeTabIndex + 1] || tabsId[activeTabIndex - 1];
     } else {
-      activeTab = "FILES";
+      activeTab = null;
     }
     closeTab(tabId);
   }

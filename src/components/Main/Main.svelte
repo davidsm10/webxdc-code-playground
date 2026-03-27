@@ -3,6 +3,7 @@
   import Editor from "../Editor/Editor.svelte";
   import FileManager from "../FileManager/FileManager.svelte";
   import {
+    ArrowLeftIcon,
     CodeXmlIcon,
     EllipsisVerticalIcon,
     FilesIcon,
@@ -37,6 +38,8 @@
   );
   const typescriptWorker = wrap<WorkerShape>(rawTypescriptWorker);
   typescriptWorker.initialize();
+
+  let showFileManager = $state(false);
 
   let showActions = $state(false);
   // svelte-ignore non_reactive_update
@@ -133,78 +136,84 @@
 <div class="container">
   {#await setupZenFSDB() then}
     {#await setupTemplate() then}
-      <div class="header">
-        <button
-          class={activeTab === "FILES" ? "tab active" : "tab"}
-          onclick={() => (activeTab = "FILES")}
-          title="Files"
-        >
-          <FilesIcon size="20" />
-        </button>
-        {#await setSavedTabs() then}
-          <Tabs
-            bind:tabs
-            bind:activeTab
-            bind:this={tabsComp}
-            {onActiveTabChange}
-            {onTabsChange}
-          />
-        {/await}
-        <div class="panel-right">
+      <div class="side-bar" hidden={!showFileManager}>
+        <FileManager
+          onDeleted={onFSNodeDeleted}
+          onFileNodeClick={onFSFileNodeClick}
+        />
+      </div>
+      <div class="main">
+        <div class="header">
           <button
             class="tab"
-            title="More"
-            use:floatingRef
-            onclick={onShowActionsClick}
+            onclick={() => (showFileManager = !showFileManager)}
+            title="Files"
           >
-            <EllipsisVerticalIcon size="20" />
+            {#if showFileManager}
+              <ArrowLeftIcon />
+            {:else}
+              <FilesIcon size="20" />
+            {/if}
           </button>
-        </div>
-      </div>
-
-      {#if showActions}
-        <div
-          class="actions"
-          role="menu"
-          tabindex="-1"
-          bind:this={actionsDiv}
-          use:floatingContent
-          onfocusout={onActionsFocusOut}
-        >
-          <button onclick={exportApp}>
-            <Share2Icon size="20px" />
-            Export app
-          </button>
-          {#if activeTab !== "FILES"}
-            <button onclick={formatActiveTabContent}>
-              <CodeXmlIcon size="20" />
-              Format file
+          {#await setSavedTabs() then}
+            <Tabs
+              bind:tabs
+              bind:activeTab
+              bind:this={tabsComp}
+              {onActiveTabChange}
+              {onTabsChange}
+            />
+          {/await}
+          <div class="panel-right">
+            <button
+              class="tab"
+              title="More"
+              use:floatingRef
+              onclick={onShowActionsClick}
+            >
+              <EllipsisVerticalIcon size="20" />
             </button>
-          {/if}
-        </div>
-      {/if}
-
-      <div class="content">
-        <div hidden={activeTab !== "FILES"} style="height: 100%;">
-          <FileManager
-            onDeleted={onFSNodeDeleted}
-            onFileNodeClick={onFSFileNodeClick}
-          />
-        </div>
-        {#each tabs as [path] (path)}
-          <div hidden={path !== activeTab} style="height: 100%;">
-            {#await readFile(path, { encoding: "utf-8" }) then initialValue}
-              <Editor
-                {path}
-                {initialValue}
-                {typescriptWorker}
-                onChange={(value) => onEditorValueChanged(path, value)}
-                onDestroy={() => delete editors[path]}
-                bind:this={editors[path]}
-              />
-            {/await}
           </div>
-        {/each}
+        </div>
+
+        {#if showActions}
+          <div
+            class="actions"
+            role="menu"
+            tabindex="-1"
+            bind:this={actionsDiv}
+            use:floatingContent
+            onfocusout={onActionsFocusOut}
+          >
+            <button onclick={exportApp}>
+              <Share2Icon size="20px" />
+              Export app
+            </button>
+            {#if activeTab !== null}
+              <button onclick={formatActiveTabContent}>
+                <CodeXmlIcon size="20" />
+                Format file
+              </button>
+            {/if}
+          </div>
+        {/if}
+
+        <div class="content">
+          {#each tabs as [path] (path)}
+            <div hidden={path !== activeTab} style="height: 100%;">
+              {#await readFile(path, { encoding: "utf-8" }) then initialValue}
+                <Editor
+                  {path}
+                  {initialValue}
+                  {typescriptWorker}
+                  onChange={(value) => onEditorValueChanged(path, value)}
+                  onDestroy={() => delete editors[path]}
+                  bind:this={editors[path]}
+                />
+              {/await}
+            </div>
+          {/each}
+        </div>
       </div>
     {/await}
   {/await}
@@ -214,6 +223,19 @@
   .container {
     width: 100%;
     height: 100%;
+    display: flex;
+  }
+
+  .side-bar {
+    flex: 0 0 auto;
+    width: 300px;
+    max-width: 75%;
+    border-right: 0.5px solid #3a3f4b;
+  }
+
+  .main {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .header {
