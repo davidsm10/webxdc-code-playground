@@ -68,7 +68,8 @@
 <div class="tabs">
   {#each tabsArray as [id, tab] (id)}
     <div
-      class={activeTab === id ? "tab active" : "tab"}
+      class="tab no-select"
+      class:active={activeTab === id}
       role="button"
       tabindex="0"
       onclick={() => setActiveTab(id)}
@@ -94,6 +95,13 @@
 </div>
 
 <style>
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
   .tabs {
     display: flex;
     width: 100%;
