@@ -163,6 +163,16 @@
             />
           {/await}
           <div class="panel-right">
+            {#if window.webxdc}
+              <button
+                class="button"
+                onclick={exportApp}
+                aria-label="Export app"
+                title="Export app"
+              >
+                <Share2Icon size="20px" />
+              </button>
+            {/if}
             <button
               class="button"
               title="More"
@@ -183,10 +193,6 @@
             use:floatingContent
             onfocusout={onActionsFocusOut}
           >
-            <button onclick={exportApp}>
-              <Share2Icon size="20px" />
-              Export app
-            </button>
             {#if activeTab !== null}
               <button onclick={formatActiveTabContent}>
                 <CodeXmlIcon size="20" />
@@ -253,6 +259,7 @@
   .panel-left {
     height: 100%;
     display: flex;
+    gap: 3px;
     align-items: center;
     padding-left: 5px;
     padding-right: 5px;
