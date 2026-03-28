@@ -28,18 +28,16 @@
 
   export function closeTab(tab: string) {
     if (tabs.includes(tab)) {
+      if (tab === activeTab) {
+        if (tabs.length > 1) {
+          const activeTabIndex = tabs.indexOf(tab);
+          activeTab = tabs[activeTabIndex + 1] || tabs[activeTabIndex - 1];
+        } else {
+          activeTab = null;
+        }
+      }
       tabs = tabs.filter((val) => val !== tab);
     }
-  }
-
-  function onCloseTabBtnClick(tab: string) {
-    if (tabs.length > 1) {
-      const activeTabIndex = tabs.indexOf(tab);
-      activeTab = tabs[activeTabIndex + 1] || tabs[activeTabIndex - 1];
-    } else {
-      activeTab = null;
-    }
-    closeTab(tab);
   }
 
   function onTabKeydown(e: KeyboardEvent, tab: string) {
@@ -79,7 +77,7 @@
           aria-label="Close tab"
           onclick={(e) => {
             e.stopPropagation();
-            onCloseTabBtnClick(tab);
+            closeTab(tab);
           }}
           class="close-tab-btn"
         >
