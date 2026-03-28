@@ -20,7 +20,7 @@
   import { readFile, writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
-  import { relative, isAbsolute } from "@zenfs/core/path";
+  import { relative, isAbsolute, resolve } from "@zenfs/core/path";
 
   // svelte-ignore non_reactive_update
   let tabsComp: Tabs;
@@ -86,13 +86,32 @@
   function onFSNodeDeleted(node: Node) {
     tabs.forEach((tab) => {
       if (tab === node.path) tabsComp.closeTab(tab);
-      const relativePath = relative(node.path, tab);
-      if (
-        relativePath &&
-        !relativePath.startsWith("..") &&
-        !isAbsolute(relativePath)
-      ) {
-        tabsComp.closeTab(tab);
+      else {
+        const relativePath = relative(node.path, tab);
+        if (
+          relativePath &&
+          !relativePath.startsWith("..") &&
+          !isAbsolute(relativePath)
+        ) {
+          tabsComp.closeTab(tab);
+        }
+      }
+    });
+  }
+
+  function onFSNodeRenamed(from: Node, to: Node) {
+    tabs.forEach((tab) => {
+      if (tab === from.path) tabsComp.replaceTab(from.path, to.path);
+      else {
+        const relativePath = relative(from.path, tab);
+        if (
+          relativePath &&
+          !relativePath.startsWith("..") &&
+          !isAbsolute(relativePath)
+        ) {
+          const finalPath = resolve(to.path, relativePath);
+          tabsComp.replaceTab(tab, finalPath);
+        }
       }
     });
   }
@@ -135,6 +154,7 @@
       <div class="side-bar" hidden={!showFileManager}>
         <FileManager
           onDeleted={onFSNodeDeleted}
+          onRenamed={onFSNodeRenamed}
           onFileNodeClick={onFSFileNodeClick}
         />
       </div>

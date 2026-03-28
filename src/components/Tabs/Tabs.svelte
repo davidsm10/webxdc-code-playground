@@ -40,6 +40,16 @@
     }
   }
 
+  export function replaceTab(from: string, to: string) {
+    if (tabs.includes(from)) {
+      tabs[tabs.indexOf(from)] = to;
+      tabs = [...tabs];
+      if (activeTab === from) {
+        activeTab = to;
+      }
+    }
+  }
+
   function onTabKeydown(e: KeyboardEvent, tab: string) {
     if (e.key === "Enter" || e.key === " ") {
       setActiveTab(tab);
