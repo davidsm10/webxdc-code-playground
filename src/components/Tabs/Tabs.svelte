@@ -1,60 +1,56 @@
 <script lang="ts">
   import { XIcon } from "@lucide/svelte";
-  import type { Tabs, Tab, TabsArray } from "./types";
-  import { SvelteMap } from "svelte/reactivity";
+  import { basename } from "@zenfs/core/path";
 
   let {
-    tabs: tabsArray = $bindable(),
+    tabs = $bindable(),
     activeTab = $bindable(),
     onTabsChange = undefined,
     onActiveTabChange = undefined,
   }: {
-    tabs: TabsArray;
+    tabs: string[];
     activeTab: string | null;
-    onTabsChange?: (tabs: TabsArray) => void;
-    onActiveTabChange?: (tabId: string | null) => void;
+    onTabsChange?: (tabs: string[]) => void;
+    onActiveTabChange?: (tab: string | null) => void;
   } = $props();
 
-  const tabs: Tabs = new SvelteMap(tabsArray);
-
-  export function setActiveTab(tabId: string) {
-    if (tabs.has(tabId)) {
-      activeTab = tabId;
+  export function setActiveTab(tab: string) {
+    if (tabs.includes(tab)) {
+      activeTab = tab;
     }
   }
 
-  export function addTab(tabId: string, tab: Tab) {
-    tabs.set(tabId, tab);
-  }
-
-  export function closeTab(tabId: string) {
-    if (tabs.has(tabId)) {
-      tabs.delete(tabId);
+  export function addTab(tab: string) {
+    if (!tabs.includes(tab)) {
+      tabs = [...tabs, tab];
     }
   }
 
-  function onCloseTabBtnClick(tabId: string) {
-    if (tabs.size > 1) {
-      const tabsId = Array.from(tabs.keys());
-      const activeTabIndex = tabsId.indexOf(tabId);
-      activeTab = tabsId[activeTabIndex + 1] || tabsId[activeTabIndex - 1];
+  export function closeTab(tab: string) {
+    if (tabs.includes(tab)) {
+      tabs = tabs.filter((val) => val !== tab);
+    }
+  }
+
+  function onCloseTabBtnClick(tab: string) {
+    if (tabs.length > 1) {
+      const activeTabIndex = tabs.indexOf(tab);
+      activeTab = tabs[activeTabIndex + 1] || tabs[activeTabIndex - 1];
     } else {
       activeTab = null;
     }
-    closeTab(tabId);
+    closeTab(tab);
   }
 
-  function onTabKeydown(e: KeyboardEvent, tabId: string) {
+  function onTabKeydown(e: KeyboardEvent, tab: string) {
     if (e.key === "Enter" || e.key === " ") {
-      setActiveTab(tabId);
+      setActiveTab(tab);
     }
   }
 
   $effect(() => {
     if (onTabsChange) {
-      const newTabsArray = Array.from(tabs);
-      onTabsChange(newTabsArray);
-      tabsArray = newTabsArray;
+      onTabsChange(tabs);
     }
   });
 
@@ -66,24 +62,24 @@
 </script>
 
 <div class="tabs">
-  {#each tabsArray as [id, tab] (id)}
+  {#each tabs as tab (tab)}
     <div
       class="tab no-select"
-      class:active={activeTab === id}
+      class:active={activeTab === tab}
       role="button"
       tabindex="0"
-      onclick={() => setActiveTab(id)}
-      onkeydown={(e) => onTabKeydown(e, id)}
+      onclick={() => setActiveTab(tab)}
+      onkeydown={(e) => onTabKeydown(e, tab)}
     >
       <small>
-        {tab.name}
+        {basename(tab)}
       </small>
-      {#if activeTab === id}
+      {#if activeTab === tab}
         <button
           aria-label="Close tab"
           onclick={(e) => {
             e.stopPropagation();
-            onCloseTabBtnClick(id);
+            onCloseTabBtnClick(tab);
           }}
           class="close-tab-btn"
         >

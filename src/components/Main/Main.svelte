@@ -20,12 +20,11 @@
   import { readFile, writeFile } from "@zenfs/core/promises";
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
-  import type { TabsArray } from "../Tabs/types";
   import { relative, isAbsolute } from "@zenfs/core/path";
 
   // svelte-ignore non_reactive_update
   let tabsComp: Tabs;
-  let tabs: TabsArray = $state.raw([]);
+  let tabs: string[] = $state.raw([]);
   let activeTab: string | null = $state(null);
 
   let editors: { [path: string]: Editor } = {};
@@ -85,34 +84,34 @@
   }
 
   function onFSNodeDeleted(node: Node) {
-    tabs.forEach(([path]) => {
-      if (path === node.path) tabsComp.closeTab(path);
-      const relativePath = relative(node.path, path);
+    tabs.forEach((tab) => {
+      if (tab === node.path) tabsComp.closeTab(tab);
+      const relativePath = relative(node.path, tab);
       if (
         relativePath &&
         !relativePath.startsWith("..") &&
         !isAbsolute(relativePath)
       ) {
-        tabsComp.closeTab(path);
+        tabsComp.closeTab(tab);
       }
     });
   }
 
   function onFSFileNodeClick(node: Node) {
-    tabsComp.addTab(node.path, { name: node.name });
+    tabsComp.addTab(node.path);
     activeTab = node.path;
   }
 
-  async function onActiveTabChange(tabId: string | null) {
-    await generalDB.setItem("activeTab", tabId);
+  async function onActiveTabChange(tab: string | null) {
+    await generalDB.setItem("activeTab", tab);
   }
 
-  async function onTabsChange(tabs: TabsArray) {
+  async function onTabsChange(tabs: string[]) {
     await generalDB.setItem("tabs", tabs);
   }
 
   async function setSavedTabs() {
-    const savedTabs = await generalDB.getItem<TabsArray>("tabs");
+    const savedTabs = await generalDB.getItem<string[]>("tabs");
     const savedActiveTab = await generalDB.getItem<string>("activeTab");
     if (savedTabs) tabs = savedTabs;
     if (savedActiveTab) activeTab = savedActiveTab;
@@ -204,16 +203,16 @@
         {/if}
 
         <div class="content">
-          {#each tabs as [path] (path)}
-            <div hidden={path !== activeTab} style="height: 100%;">
-              {#await readFile(path, { encoding: "utf-8" }) then initialValue}
+          {#each tabs as tab (tab)}
+            <div hidden={tab !== activeTab} style="height: 100%;">
+              {#await readFile(tab, { encoding: "utf-8" }) then initialValue}
                 <Editor
-                  {path}
+                  path={tab}
                   {initialValue}
                   {typescriptWorker}
-                  onChange={(value) => onEditorValueChanged(path, value)}
-                  onDestroy={() => delete editors[path]}
-                  bind:this={editors[path]}
+                  onChange={(value) => onEditorValueChanged(tab, value)}
+                  onDestroy={() => delete editors[tab]}
+                  bind:this={editors[tab]}
                 />
               {/await}
             </div>

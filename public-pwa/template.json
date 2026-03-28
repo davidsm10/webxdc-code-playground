@@ -1,23 +1,4 @@
 {
   "files": ["/index.html", "/style.css", "/script.js"],
-  "tabs": [
-    [
-      "/index.html",
-      {
-        "name": "index.html"
-      }
-    ],
-    [
-      "/script.js",
-      {
-        "name": "script.js"
-      }
-    ],
-    [
-      "/style.css",
-      {
-        "name": "style.css"
-      }
-    ]
-  ]
+  "tabs": ["/index.html", "/style.css", "/script.js"]
 }
