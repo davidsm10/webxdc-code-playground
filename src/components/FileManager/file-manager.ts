@@ -18,15 +18,19 @@ export function isValidName(name: string) {
   return true;
 }
 
-export async function getFolderZip(path: string) {
+export async function getFolderZip(folderPath: string) {
   const zip = new JSZip();
-  const files = await readdir(path, { withFileTypes: true, recursive: true });
+  const files = await readdir(folderPath, {
+    withFileTypes: true,
+    recursive: true,
+  });
   for (const file of files) {
     const path = resolve(file.parentPath, file.name);
     if (file.isDirectory()) {
       zip.folder(path);
     } else if (file.isFile()) {
-      const content = await readFile(path);
+      const absolutePath = resolve(folderPath, file.parentPath, file.name);
+      const content = await readFile(absolutePath);
       zip.file(path, content);
     }
   }
