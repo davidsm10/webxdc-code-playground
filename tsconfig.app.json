@@ -6,6 +6,7 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "types": ["svelte", "vite/client", "@webxdc/types/global"],
+    "lib": ["webworker"],
     "noEmit": true,
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.

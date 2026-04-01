@@ -2,11 +2,13 @@
   import Tabs from "../Tabs/Tabs.svelte";
   import Editor from "../Editor/Editor.svelte";
   import FileManager from "../FileManager/FileManager.svelte";
+  import Preview from "../Preview/Preview.svelte";
   import {
     ArrowLeftIcon,
     CodeXmlIcon,
     EllipsisVerticalIcon,
     FilesIcon,
+    PlayIcon,
     Share2Icon,
   } from "@lucide/svelte";
   import { wrap } from "comlink";
@@ -21,6 +23,7 @@
   import type { Template } from "./types";
   import type { Node } from "../FileManager/types";
   import { relative, isAbsolute, resolve } from "@zenfs/core/path";
+  import type { FileRequest, FileResponse } from "../Preview/types";
 
   // svelte-ignore non_reactive_update
   let tabsComp: Tabs;
@@ -37,6 +40,27 @@
   );
   const typescriptWorker = wrap<WorkerShape>(rawTypescriptWorker);
   typescriptWorker.initialize();
+
+  if (!window.webxdc) {
+    navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
+  }
+  async function onServiceWorkerMessage(event: MessageEvent<FileRequest>) {
+    if (event.data.type === "file-request") {
+      let response: FileResponse = {
+        type: "file-response",
+        path: event.data.path,
+      };
+      try {
+        response.content = (await readFile(
+          event.data.path,
+        )) as Uint8Array<ArrayBuffer>;
+      } catch (err) {
+        response.error = err;
+      } finally {
+        event.source?.postMessage(response);
+      }
+    }
+  }
 
   let showFileManager = $state(false);
 
@@ -146,6 +170,17 @@
     }
     showActions = false;
   }
+
+  function openPreview() {
+    let previewTab;
+    if (activeTab?.endsWith(".html")) {
+      previewTab = "preview:" + activeTab;
+    } else {
+      previewTab = "preview:" + "/index.html";
+    }
+    tabsComp.addTab(previewTab);
+    tabsComp.setActiveTab(previewTab);
+  }
 </script>
 
 <div class="container">
@@ -193,7 +228,7 @@
                 <Share2Icon size="20px" />
               </button>
             {/if}
-            {#if activeTab !== null}
+            {#if activeTab !== null && !activeTab.startsWith("preview:")}
               <button
                 class="button"
                 title="More"
@@ -219,22 +254,34 @@
               <CodeXmlIcon size="20" />
               Format file
             </button>
+            {#await navigator.serviceWorker.ready then}
+              <button onclick={openPreview}>
+                <PlayIcon size="20" />
+                Open preview
+              </button>
+            {/await}
           </div>
         {/if}
 
         <div class="content">
           {#each tabs as tab (tab)}
             <div hidden={tab !== activeTab} style="height: 100%;">
-              {#await readFile(tab, { encoding: "utf-8" }) then initialValue}
-                <Editor
-                  path={tab}
-                  {initialValue}
-                  {typescriptWorker}
-                  onChange={(value) => onEditorValueChanged(tab, value)}
-                  onDestroy={() => delete editors[tab]}
-                  bind:this={editors[tab]}
-                />
-              {/await}
+              {#if tab.startsWith("preview:")}
+                {#if activeTab === tab}
+                  <Preview entryPath={tab.replace("preview:", "")} />
+                {/if}
+              {:else}
+                {#await readFile(tab, { encoding: "utf-8" }) then initialValue}
+                  <Editor
+                    path={tab}
+                    {initialValue}
+                    {typescriptWorker}
+                    onChange={(value) => onEditorValueChanged(tab, value)}
+                    onDestroy={() => delete editors[tab]}
+                    bind:this={editors[tab]}
+                  />
+                {/await}
+              {/if}
             </div>
           {/each}
         </div>

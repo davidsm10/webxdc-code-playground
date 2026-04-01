@@ -1,6 +1,7 @@
 <script lang="ts">
   import { XIcon } from "@lucide/svelte";
   import { basename } from "@zenfs/core/path";
+  import { PlayIcon } from "@lucide/svelte";
 
   let {
     tabs = $bindable(),
@@ -79,7 +80,10 @@
       onclick={() => setActiveTab(tab)}
       onkeydown={(e) => onTabKeydown(e, tab)}
     >
-      <small>
+      <small class="name">
+        {#if tab.startsWith("preview:")}
+          <PlayIcon size="20" />
+        {/if}
         {basename(tab)}
       </small>
       {#if activeTab === tab}
@@ -144,6 +148,12 @@
     outline-offset: -2px;
     outline-width: 0.5px;
     outline-color: #61afef;
+  }
+
+  .tab .name {
+    display: flex;
+    gap: 3px;
+    align-items: center;
   }
 
   .close-tab-btn {
