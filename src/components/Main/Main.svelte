@@ -26,8 +26,8 @@
   import type { FileRequest, FileResponse } from "../Preview/types";
 
   // svelte-ignore non_reactive_update
-  let tabsComp: Tabs;
-  let tabs: string[] = $state.raw([]);
+  let tabs: Tabs;
+  let tabsArray: string[] = $state.raw([]);
   let activeTab: string | null = $state(null);
 
   let editors: { [path: string]: Editor } = {};
@@ -101,15 +101,15 @@
         await writeFile(path, content);
       }
 
-      tabs = template.tabs;
+      tabsArray = template.tabs;
       activeTab = "/index.html";
       await generalDB.setItem("templateSet", true);
     }
   }
 
   function onFSNodeDeleted(node: Node) {
-    tabs.forEach((tab) => {
-      if (tab === node.path) tabsComp.closeTab(tab);
+    tabsArray.forEach((tab) => {
+      if (tab === node.path) tabs.closeTab(tab);
       else {
         const relativePath = relative(node.path, tab);
         if (
@@ -117,15 +117,15 @@
           !relativePath.startsWith("..") &&
           !isAbsolute(relativePath)
         ) {
-          tabsComp.closeTab(tab);
+          tabs.closeTab(tab);
         }
       }
     });
   }
 
   function onFSNodeRenamed(from: Node, to: Node) {
-    tabs.forEach((tab) => {
-      if (tab === from.path) tabsComp.replaceTab(from.path, to.path);
+    tabsArray.forEach((tab) => {
+      if (tab === from.path) tabs.replaceTab(from.path, to.path);
       else {
         const relativePath = relative(from.path, tab);
         if (
@@ -134,14 +134,14 @@
           !isAbsolute(relativePath)
         ) {
           const finalPath = resolve(to.path, relativePath);
-          tabsComp.replaceTab(tab, finalPath);
+          tabs.replaceTab(tab, finalPath);
         }
       }
     });
   }
 
   function onFSFileNodeClick(node: Node) {
-    tabsComp.addTab(node.path);
+    tabs.addTab(node.path);
     activeTab = node.path;
   }
 
@@ -156,7 +156,7 @@
   async function setSavedTabs() {
     const savedTabs = await generalDB.getItem<string[]>("tabs");
     const savedActiveTab = await generalDB.getItem<string>("activeTab");
-    if (savedTabs) tabs = savedTabs;
+    if (savedTabs) tabsArray = savedTabs;
     if (savedActiveTab) activeTab = savedActiveTab;
   }
 
@@ -178,8 +178,8 @@
     } else {
       previewTab = "preview:" + "/index.html";
     }
-    tabsComp.addTab(previewTab);
-    tabsComp.setActiveTab(previewTab);
+    tabs.addTab(previewTab);
+    tabs.setActiveTab(previewTab);
   }
 </script>
 
@@ -210,9 +210,9 @@
           </div>
           {#await setSavedTabs() then}
             <Tabs
-              bind:tabs
+              bind:tabs={tabsArray}
               bind:activeTab
-              bind:this={tabsComp}
+              bind:this={tabs}
               {onActiveTabChange}
               {onTabsChange}
             />
@@ -264,7 +264,7 @@
         {/if}
 
         <div class="content">
-          {#each tabs as tab (tab)}
+          {#each tabsArray as tab (tab)}
             <div hidden={tab !== activeTab} style="height: 100%;">
               {#if tab.startsWith("preview:")}
                 {#if activeTab === tab}
