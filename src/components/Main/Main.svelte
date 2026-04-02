@@ -20,7 +20,8 @@
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
   import { readFile, writeFile } from "@zenfs/core/promises";
-  import type { Template } from "./types";
+  import * as webTemplate from "../../web-template";
+  import * as webxdcTemplate from "../../webxdc-template";
   import type { Node } from "../FileManager/types";
   import { relative, isAbsolute, resolve } from "@zenfs/core/path";
   import type { FileRequest, FileResponse } from "../Preview/types";
@@ -95,9 +96,8 @@
 
   async function setupTemplate() {
     if (!(await generalDB.getItem("templateSet"))) {
-      const template: Template = await (await fetch("template.json")).json();
-      for (const path of template.files) {
-        const content = await (await fetch("template" + path)).text();
+      const template = window.webxdc ? webxdcTemplate : webTemplate;
+      for (const [path, content] of template.files) {
         await writeFile(path, content);
       }
 
