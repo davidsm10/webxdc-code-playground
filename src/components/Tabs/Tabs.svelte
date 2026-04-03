@@ -130,6 +130,10 @@
     flex: 0 0 auto;
   }
 
+  .tab:first-child {
+    border-left: 0.5px solid #3a3f4b;
+  }
+
   .tab.active,
   .tab.active:focus {
     background-color: #282c34;
