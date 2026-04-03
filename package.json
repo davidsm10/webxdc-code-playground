@@ -10,7 +10,8 @@
     "build:pwa": "vite build --config pwa.vite.config.ts",
     "preview:pwa": "vite preview --config pwa.vite.config.ts",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json && prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate-pwa-assets": "pwa-assets-generator"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
