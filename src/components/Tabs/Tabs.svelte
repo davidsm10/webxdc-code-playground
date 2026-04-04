@@ -80,10 +80,10 @@
       onclick={() => setActiveTab(tab)}
       onkeydown={(e) => onTabKeydown(e, tab)}
     >
-      <small class="name">
-        {#if tab.startsWith("preview:")}
-          <PlayIcon size="20" />
-        {/if}
+      {#if tab.startsWith("preview:")}
+        <PlayIcon size="20" />
+      {/if}
+      <small>
         {basename(tab)}
       </small>
       {#if activeTab === tab}
@@ -123,6 +123,7 @@
     padding: 10px;
     cursor: pointer;
     display: flex;
+    gap: 3px;
     align-items: center;
     justify-content: center;
     border-right: 0.5px solid #3a3f4b;
@@ -139,7 +140,6 @@
     color: #abb2bf;
     outline-style: none;
     border-top: 2px solid #61afef;
-    padding-right: 0;
   }
 
   .tab:hover {
@@ -153,16 +153,9 @@
     outline-color: #61afef;
   }
 
-  .tab .name {
-    display: flex;
-    gap: 3px;
-    align-items: center;
-  }
-
   .tab button {
     color: #7d8799;
     background-color: #2e323c;
-    margin: 5px;
     border: none;
     border-radius: 3px;
     padding: 2px;
