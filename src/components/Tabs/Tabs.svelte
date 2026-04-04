@@ -93,7 +93,6 @@
             e.stopPropagation();
             closeTab(tab);
           }}
-          class="close-tab-btn"
         >
           <XIcon size="20" />
         </button>
@@ -160,7 +159,7 @@
     align-items: center;
   }
 
-  .close-tab-btn {
+  .tab button {
     color: #7d8799;
     background-color: #2e323c;
     margin: 5px;
@@ -173,18 +172,18 @@
     cursor: pointer;
   }
 
-  .close-tab-btn:hover {
+  .tab button:hover {
     color: #fff;
     background-color: #464c5c;
   }
 
-  .close-tab-btn:focus {
+  .tab button:focus {
     outline-style: solid;
     outline-width: 0.5px;
     outline-color: #61afef;
   }
 
-  .close-tab-btn:active {
+  .tab button:active {
     color: #fff;
     background-color: #535a6d;
   }
