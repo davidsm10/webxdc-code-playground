@@ -30,13 +30,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (new URL(event.request.url).origin !== location.origin) return;
-  if (event.request.destination === "document") {
-    event.respondWith(getAppResponse(event));
-  } else if (event.request.destination === "iframe") {
-    event.respondWith(getPreviewResponse(event));
-  } else {
-    event.respondWith(getResponse(event));
-  }
+  event.respondWith(getResponse(event));
 });
 
 async function saveAppAssets() {
@@ -72,6 +66,11 @@ async function deleteOldAssets() {
 }
 
 async function getResponse(event: FetchEvent) {
+  if (event.request.destination === "document") {
+    return getAppResponse(event);
+  } else if (event.request.destination === "iframe") {
+    return getPreviewResponse(event);
+  }
   const client = await self.clients.get(event.clientId);
   if (!client) return fetch(event.request);
   if (client.frameType === "top-level") {
