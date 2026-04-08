@@ -100,7 +100,7 @@ async function getAppResponse(event: FetchEvent) {
   } else return fetch(event.request);
 }
 
-async function requestRemoteFileContent(event: FetchEvent, path: string) {
+async function requestRemoteFileContent(path: string) {
   const fileContentPromise: Promise<Uint8Array<ArrayBuffer>> = new Promise(
     (resolve, reject) => {
       self.addEventListener("message", (event) => {
@@ -117,8 +117,7 @@ async function requestRemoteFileContent(event: FetchEvent, path: string) {
   );
   const clients = await self.clients.matchAll({ type: "window" });
   for (const client of clients) {
-    const previewClientId = event.clientId || event.resultingClientId;
-    if (client.id !== previewClientId) {
+    if (client.frameType === "top-level") {
       client.postMessage({ type: "file-request", path: path });
     }
   }
@@ -129,7 +128,7 @@ async function getPreviewResponse(event: FetchEvent) {
   let path = new URL(event.request.url).pathname;
   if (path.endsWith("/")) path += "index.html";
   try {
-    const file = await requestRemoteFileContent(event, path);
+    const file = await requestRemoteFileContent(path);
     const mimetype = lookup(path);
     return new Response(file, {
       headers: {
