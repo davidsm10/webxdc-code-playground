@@ -72,13 +72,10 @@ async function getResponse(event: FetchEvent) {
     return getPreviewResponse(event);
   }
   const client = await self.clients.get(event.clientId);
-  if (!client) return fetch(event.request);
-  if (client.frameType === "top-level") {
+  if (client && client.frameType === "top-level") {
     return getAppResponse(event);
-  } else if (client.frameType === "nested") {
-    return getPreviewResponse(event);
   } else {
-    return getAppResponse(event);
+    return getPreviewResponse(event);
   }
 }
 
