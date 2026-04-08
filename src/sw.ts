@@ -94,7 +94,8 @@ async function getAppResponse(event: FetchEvent) {
         "Cache-Control": "no-store",
       },
     });
-  } else return fetch(event.request);
+  }
+  return fetch(event.request);
 }
 
 async function requestRemoteFileContent(path: string) {
@@ -126,10 +127,9 @@ async function getPreviewResponse(event: FetchEvent) {
   if (path.endsWith("/")) path += "index.html";
   try {
     const file = await requestRemoteFileContent(path);
-    const mimetype = lookup(path);
     return new Response(file, {
       headers: {
-        "Content-Type": mimetype || "application/octet-stream",
+        "Content-Type": lookup(path) || "application/octet-stream",
         "Content-Length": String(file.length),
         "Cache-Control": "no-store",
       },
