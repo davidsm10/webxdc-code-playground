@@ -9,12 +9,18 @@ const precacheManifest = self.__WB_MANIFEST as {
   url: string;
   revision: string | null;
 }[];
+const extraAssets = [
+  "/icon.svg",
+  "/favicon.ico",
+  "/apple-touch-icon-180x180.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async function () {
       await self.skipWaiting();
       await saveAppAssets();
+      saveExtraAssets();
     })(),
   );
 });
@@ -55,11 +61,18 @@ async function saveAppAssets() {
   }
 }
 
+async function saveExtraAssets() {
+  for (const path of extraAssets) {
+    const file = await (await fetch(path)).blob();
+    await appAssetsDB.setItem(path, { data: file });
+  }
+}
+
 async function deleteOldAssets() {
   const savedAssetsPaths = await appAssetsDB.keys();
-  const precacheManifestPaths = precacheManifest.map(({ url }) => url);
+  const precacheManifestPaths = precacheManifest.map(({ url }) => "/" + url);
   for (const path of savedAssetsPaths) {
-    if (!precacheManifestPaths.includes(path.replace("/", ""))) {
+    if (!precacheManifestPaths.includes(path) && !extraAssets.includes(path)) {
       await appAssetsDB.removeItem(path);
     }
   }
