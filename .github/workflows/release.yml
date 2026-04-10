@@ -16,11 +16,9 @@ jobs:
       - run: pnpm build
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Auto-generated release
-          prerelease: ${{ contains(github.event.ref, '-beta') }}
           fail_on_unmatched_files: true
           files: ./dist-xdc/*.xdc
