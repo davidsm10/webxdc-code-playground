@@ -27,11 +27,11 @@ export async function getFolderZip(folderPath: string) {
   for (const file of files) {
     const path = resolve(file.parentPath, file.name);
     if (file.isDirectory()) {
-      zip.folder(path);
+      zip.folder(path.replace("/", ""));
     } else if (file.isFile()) {
       const absolutePath = resolve(folderPath, file.parentPath, file.name);
       const content = await readFile(absolutePath);
-      zip.file(path, content);
+      zip.file(path.replace("/", ""), content);
     }
   }
   return await zip.generateAsync({
