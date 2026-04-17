@@ -112,8 +112,8 @@ async function getAppResponse(event: FetchEvent) {
 }
 
 async function requestRemoteFileContent(path: string) {
-  const fileContentPromise: Promise<Uint8Array<ArrayBuffer>> = new Promise(
-    (resolve, reject) => {
+  const fileContentPromise: Promise<Uint8Array<ArrayBuffer> | string> =
+    new Promise((resolve, reject) => {
       self.addEventListener("message", (event) => {
         const data: FileResponse = event.data;
         if (data.type === "file-response" && data.path === path) {
@@ -124,8 +124,7 @@ async function requestRemoteFileContent(path: string) {
           }
         }
       });
-    },
-  );
+    });
   const clients = await self.clients.matchAll({ type: "window" });
   for (const client of clients) {
     if (client.frameType === "top-level") {

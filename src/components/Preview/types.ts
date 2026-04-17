@@ -6,6 +6,6 @@ export interface FileRequest {
 export interface FileResponse {
   type: "file-response";
   path: string;
-  content?: Uint8Array<ArrayBuffer>;
+  content?: Uint8Array<ArrayBuffer> | string;
   error?: any;
 }

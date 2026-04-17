@@ -42,24 +42,36 @@
   const typescriptWorker = wrap<WorkerShape>(rawTypescriptWorker);
   typescriptWorker.initialize();
 
-  if (!window.webxdc) {
-    navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
-  }
+  navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
   async function onServiceWorkerMessage(event: MessageEvent<FileRequest>) {
-    if (event.data.type === "file-request") {
-      let response: FileResponse = {
-        type: "file-response",
-        path: event.data.path,
-      };
-      try {
+    if (event.data.type !== "file-request") return;
+    let response: FileResponse = {
+      type: "file-response",
+      path: event.data.path,
+    };
+    try {
+      if (event.data.path.endsWith(".html") && window.webxdc) {
+        const textContent = await readFile(event.data.path, {
+          encoding: "utf-8",
+        });
+        const doc = new DOMParser().parseFromString(textContent, "text/html");
+        const scripts = doc.querySelectorAll("script");
+        scripts.forEach((script) => {
+          if (script.src && new URL(script.src).pathname === "/webxdc.js") {
+            script.removeAttribute("src");
+            script.textContent = "window.webxdc = window.parent.webxdc";
+          }
+        });
+        response.content = "<!doctype html>\n" + doc.documentElement.outerHTML;
+      } else {
         response.content = (await readFile(
           event.data.path,
         )) as Uint8Array<ArrayBuffer>;
-      } catch (err) {
-        response.error = err;
-      } finally {
-        event.source?.postMessage(response);
       }
+    } catch (err) {
+      response.error = err;
+    } finally {
+      event.source?.postMessage(response);
     }
   }
 
