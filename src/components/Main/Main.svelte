@@ -238,6 +238,18 @@
             />
           {/await}
           <div class="panel-right">
+            {#await navigator.serviceWorker.ready then}
+              {#if !activeTab?.startsWith("preview:")}
+                <button
+                  class="button"
+                  aria-label="Open preview"
+                  title="Open preview"
+                  onclick={openPreview}
+                >
+                  <PlayIcon size="20" />
+                </button>
+              {/if}
+            {/await}
             {#if window.webxdc}
               <button
                 class="button"
@@ -274,12 +286,6 @@
               <CodeXmlIcon size="20" />
               Format file
             </button>
-            {#await navigator.serviceWorker.ready then}
-              <button onclick={openPreview}>
-                <PlayIcon size="20" />
-                Open preview
-              </button>
-            {/await}
           </div>
         {/if}
 
