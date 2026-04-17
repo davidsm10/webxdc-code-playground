@@ -6,6 +6,23 @@ declare let self: ServiceWorkerGlobalScope;
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", () => self.clients.claim());
 
+const pendingRemoteFileRequests: {
+  [path: string]: {
+    resolve: (value: string | Uint8Array<ArrayBuffer>) => void;
+    reject: (reason?: any) => void;
+  };
+} = {};
+self.addEventListener("message", (event) => {
+  const data: FileResponse = event.data;
+  if (data.type === "file-response") {
+    if (data.content) {
+      pendingRemoteFileRequests[data.path].resolve(data.content);
+    } else if (data.error) {
+      pendingRemoteFileRequests[data.path].reject(data.error);
+    }
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   if (new URL(event.request.url).origin !== location.origin) return;
   if (event.request.destination === "document") return;
@@ -52,16 +69,7 @@ async function getPreviewResponse(request: Request) {
 async function requestRemoteFileContent(path: string) {
   const fileContentPromise: Promise<Uint8Array<ArrayBuffer> | string> =
     new Promise((resolve, reject) => {
-      self.addEventListener("message", (event) => {
-        const data: FileResponse = event.data;
-        if (data.type === "file-response" && data.path === path) {
-          if (data.content) {
-            resolve(data.content);
-          } else if (data.error) {
-            reject(data.error);
-          }
-        }
-      });
+      pendingRemoteFileRequests[path] = { resolve, reject };
     });
   const clients = await self.clients.matchAll({ type: "window" });
   for (const client of clients) {
