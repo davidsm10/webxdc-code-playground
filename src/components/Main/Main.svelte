@@ -162,7 +162,7 @@
 
   function onFSFileNodeClick(node: Node) {
     tabs.addTab(node.path);
-    activeTab = node.path;
+    tabs.setActiveTab(node.path);
   }
 
   async function onActiveTabChange(tab: string | null) {
