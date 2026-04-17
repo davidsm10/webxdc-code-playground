@@ -25,6 +25,7 @@
   import type { Node } from "../FileManager/types";
   import { relative, isAbsolute, resolve } from "@zenfs/core/path";
   import type { FileRequest, FileResponse } from "../Preview/types";
+  import eruda from "eruda?raw";
 
   // svelte-ignore non_reactive_update
   let tabs: Tabs;
@@ -50,19 +51,26 @@
       path: event.data.path,
     };
     try {
-      if (event.data.path.endsWith(".html") && window.webxdc) {
+      if (event.data.path.endsWith(".html")) {
         const textContent = await readFile(event.data.path, {
           encoding: "utf-8",
         });
         const doc = new DOMParser().parseFromString(textContent, "text/html");
-        const scripts = doc.querySelectorAll("script");
-        scripts.forEach((script) => {
-          if (script.src && new URL(script.src).pathname === "/webxdc.js") {
-            script.removeAttribute("src");
-            script.textContent = "window.webxdc = window.parent.webxdc";
-          }
-        });
+        const erudaScript = doc.createElement("script");
+        erudaScript.src = "/___injected_eruda.js";
+        doc.head.prepend(erudaScript);
+        if (window.webxdc) {
+          const scripts = doc.querySelectorAll("script");
+          scripts.forEach((script) => {
+            if (script.src && new URL(script.src).pathname === "/webxdc.js") {
+              script.removeAttribute("src");
+              script.textContent = "window.webxdc = window.parent.webxdc";
+            }
+          });
+        }
         response.content = "<!doctype html>\n" + doc.documentElement.outerHTML;
+      } else if (event.data.path === "/___injected_eruda.js") {
+        response.content = eruda + "\neruda.init()";
       } else {
         response.content = (await readFile(
           event.data.path,
