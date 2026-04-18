@@ -45,6 +45,7 @@
     "jszip": "^3.10.1",
     "localforage": "^1.10.0",
     "mrmime": "^2.0.1",
+    "p-debounce": "^5.1.0",
     "prettier": "^3.7.4",
     "svelte": "^5.43.5",
     "svelte-floating-ui": "^1.6.2",

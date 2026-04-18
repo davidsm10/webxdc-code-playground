@@ -5,17 +5,15 @@
   import { type WorkerShape } from "@valtown/codemirror-ts/worker";
   import { keymap } from "@codemirror/view";
   import { formatFile } from "../../prettier";
+  import pDebounce from "p-debounce";
+  import { readFile, writeFile } from "@zenfs/core/promises";
 
   let {
     path,
-    initialValue,
-    onChange,
     onDestroy: onDestroyComp,
     typescriptWorker,
   }: {
     path: string;
-    initialValue: string;
-    onChange?: (value: string) => void;
     onDestroy?: () => void;
     typescriptWorker: WorkerShape;
   } = $props();
@@ -25,7 +23,8 @@
   let view: EditorView;
 
   onMount(async () => {
-    view = createEditorView(initialValue);
+    const content = await readFile(path, { encoding: "utf-8" });
+    view = createEditorView(content);
     view.contentDOM.setAttribute("spellcheck", "false");
     view.contentDOM.setAttribute("autocorrect", "off");
     view.contentDOM.setAttribute("autocapitalize", "off");
@@ -36,6 +35,11 @@
     view.destroy();
     if (onDestroyComp) onDestroyComp();
   });
+
+  export const saveFile = pDebounce(async () => {
+    const content = view.state.doc.toString();
+    await writeFile(path, content);
+  }, 500);
 
   export async function formatEditorContent() {
     const content = view.state.doc.toString();
@@ -87,9 +91,7 @@
           }
         }
         if (hasChanged) {
-          if (onChange) {
-            onChange(view.state.doc.toString());
-          }
+          saveFile();
         }
       },
     });

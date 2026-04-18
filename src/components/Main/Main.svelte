@@ -198,10 +198,6 @@
     if (savedActiveTab) activeTab = savedActiveTab;
   }
 
-  async function onEditorValueChanged(path: string, value: string) {
-    await writeFile(path, value);
-  }
-
   function formatActiveTabContent() {
     if (activeTab) {
       editors[activeTab].formatEditorContent();
@@ -315,16 +311,12 @@
                   <Preview entryPath={tab.replace("preview:", "")} />
                 {/if}
               {:else}
-                {#await readFile(tab, { encoding: "utf-8" }) then initialValue}
-                  <Editor
-                    path={tab}
-                    {initialValue}
-                    {typescriptWorker}
-                    onChange={(value) => onEditorValueChanged(tab, value)}
-                    onDestroy={() => delete editors[tab]}
-                    bind:this={editors[tab]}
-                  />
-                {/await}
+                <Editor
+                  path={tab}
+                  {typescriptWorker}
+                  onDestroy={() => delete editors[tab]}
+                  bind:this={editors[tab]}
+                />
               {/if}
             </div>
           {/each}
