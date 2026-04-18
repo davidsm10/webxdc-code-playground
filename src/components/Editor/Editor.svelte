@@ -29,6 +29,7 @@
     view.contentDOM.setAttribute("autocorrect", "off");
     view.contentDOM.setAttribute("autocapitalize", "off");
     view.contentDOM.setAttribute("autocomplete", "off");
+    focus();
   });
 
   onDestroy(() => {
@@ -40,6 +41,10 @@
     const content = view.state.doc.toString();
     await writeFile(path, content);
   }, 500);
+
+  export function focus() {
+    if (view) view.focus();
+  }
 
   export async function formatEditorContent() {
     const content = view.state.doc.toString();
@@ -57,7 +62,11 @@
           head: formatResult.cursorOffset,
         },
       });
-    } catch {}
+    } catch (err) {
+      console.log(`Error while formatting ${path}:`, err);
+    } finally {
+      focus();
+    }
   }
 
   function getFormatKeymap() {

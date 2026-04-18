@@ -184,6 +184,10 @@
   }
 
   async function onActiveTabChange(tab: string | null) {
+    if (tab && !tab.startsWith("preview:")) {
+      await tick();
+      if (editors[tab]) editors[tab].focus();
+    }
     await generalDB.setItem("activeTab", tab);
   }
 
