@@ -2,6 +2,7 @@ import { readdir, readFile } from "@zenfs/core/promises";
 import type { Node } from "./types";
 import { resolve } from "@zenfs/core/path";
 import JSZip from "jszip";
+import { exportFile } from "../../util";
 
 export function sortNodes(a: Node, b: Node) {
   if (a.type !== b.type) {
@@ -48,4 +49,22 @@ export async function getDirectoryNodes(path: string): Promise<Node[]> {
     name: entry.name,
     path: resolve(path, entry.name),
   }));
+}
+
+export async function exportNodeAsFile(node: Node) {
+  let blob: Blob;
+  let name: string;
+  if (node.type === "file") {
+    blob = new Blob([(await readFile(node.path)) as Uint8Array<ArrayBuffer>]);
+    name = node.name;
+  } else {
+    blob = await getFolderZip(node.path);
+    name = node.name;
+    if (node.path === "/") {
+      name = "app";
+    }
+    name += ".zip";
+  }
+
+  await exportFile(blob, name);
 }

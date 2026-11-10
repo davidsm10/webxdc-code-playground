@@ -17,13 +17,11 @@
     unlink,
     rm,
     rename,
-    readFile,
   } from "@zenfs/core/promises";
   import { resolve, dirname } from "@zenfs/core/path";
-  import { isValidName } from "./file-manager";
-  import { copyText, importFiles, exportFile } from "../../util";
+  import { exportNodeAsFile, isValidName } from "./file-manager";
+  import { copyText, importFiles } from "../../util";
   import { tick } from "svelte";
-  import { getFolderZip } from "./file-manager";
 
   let {
     node,
@@ -91,24 +89,6 @@
     } catch (err) {
       console.log(err);
     }
-  }
-
-  async function exportNodeAsFile() {
-    let blob: Blob;
-    let name: string;
-    if (node.type === "file") {
-      blob = new Blob([(await readFile(node.path)) as Uint8Array<ArrayBuffer>]);
-      name = node.name;
-    } else {
-      blob = await getFolderZip(node.path);
-      name = node.name;
-      if (node.path === "/") {
-        name = "app";
-      }
-      name += ".zip";
-    }
-
-    await exportFile(blob, name);
   }
 
   async function deleteNode() {
@@ -210,7 +190,7 @@
         <CopyIcon size="20" />
         Copy path
       </button>
-      <button onclick={exportNodeAsFile}>
+      <button onclick={() => exportNodeAsFile(node)}>
         <DownloadIcon size="20" />
         Export
       </button>
