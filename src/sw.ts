@@ -1,4 +1,4 @@
-import { appAssetsDB } from "./dbs";
+import { appAssetsDB } from "./storage";
 import { lookup } from "mrmime";
 import type { FileResponse } from "./components/Preview/types";
 

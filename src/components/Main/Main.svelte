@@ -9,7 +9,7 @@
     PlayIcon,
     Share2Icon,
   } from "@lucide/svelte";
-  import { generalDB, setupZenFSDB } from "../../dbs";
+  import { generalDB, setupZenFSDB } from "../../storage";
   import { tick } from "svelte";
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
