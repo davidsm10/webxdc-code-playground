@@ -2,8 +2,6 @@
   import { EditorView } from "codemirror";
   import { onMount, onDestroy } from "svelte";
   import { generalExtensions, getLanguageExtensions } from "./extensions";
-  import { keymap } from "@codemirror/view";
-  import { formatFile } from "../../prettier";
   import pDebounce from "p-debounce";
   import { readFile, writeFile } from "@zenfs/core/promises";
 
@@ -43,50 +41,11 @@
     if (view) view.focus();
   }
 
-  export async function formatEditorContent() {
-    const content = view.state.doc.toString();
-    try {
-      const cursorOffset = view.state.selection.main.to;
-      const formatResult = await formatFile(content, path, cursorOffset);
-      view.dispatch({
-        changes: {
-          from: 0,
-          to: view.state.doc.length,
-          insert: formatResult.formatted,
-        },
-        selection: {
-          anchor: formatResult.cursorOffset,
-          head: formatResult.cursorOffset,
-        },
-      });
-    } catch (err) {
-      console.log(`Error while formatting ${path}:`, err);
-    } finally {
-      focus();
-    }
-  }
-
-  function getFormatKeymap() {
-    return keymap.of([
-      {
-        key: "Alt-Shift-f",
-        run: () => {
-          formatEditorContent();
-          return true;
-        },
-      },
-    ]);
-  }
-
   function createEditorView(doc: string) {
     return new EditorView({
       parent: container,
       doc: doc,
-      extensions: [
-        generalExtensions,
-        getFormatKeymap(),
-        getLanguageExtensions(path),
-      ],
+      extensions: [generalExtensions, getLanguageExtensions(path)],
       dispatchTransactions: (transactions) => {
         view.update(transactions);
         let hasChanged = false;

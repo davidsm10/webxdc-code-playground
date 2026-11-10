@@ -5,15 +5,11 @@
   import Preview from "../Preview/Preview.svelte";
   import {
     ArrowLeftIcon,
-    CodeXmlIcon,
-    EllipsisVerticalIcon,
     FilesIcon,
     PlayIcon,
     Share2Icon,
   } from "@lucide/svelte";
   import { generalDB, setupZenFSDB } from "../../dbs";
-  import { createFloatingActions } from "svelte-floating-ui";
-  import { offset } from "svelte-floating-ui/dom";
   import { tick } from "svelte";
   import { getFolderZip } from "../FileManager/file-manager";
   import { exportFile } from "../../util";
@@ -92,30 +88,6 @@
 
   let showFileManager = $state(false);
 
-  let showActions = $state(false);
-  // svelte-ignore non_reactive_update
-  let actionsDiv: HTMLDivElement;
-
-  const [floatingRef, floatingContent] = createFloatingActions({
-    strategy: "fixed",
-    placement: "left-start",
-    middleware: [offset({ crossAxis: 6, mainAxis: 6 })],
-  });
-
-  async function onShowActionsClick() {
-    showActions = true;
-    await tick();
-    actionsDiv.focus();
-  }
-
-  function onActionsFocusOut() {
-    setTimeout(() => {
-      if (!actionsDiv.contains(document.activeElement)) {
-        showActions = false;
-      }
-    }, 0);
-  }
-
   async function exportApp() {
     const appZip = await getFolderZip("/");
     await exportFile(appZip, "app.xdc");
@@ -191,13 +163,6 @@
     if (savedActiveTab) activeTab = savedActiveTab;
   }
 
-  function formatActiveTabContent() {
-    if (activeTab) {
-      editors[activeTab].formatEditorContent();
-    }
-    showActions = false;
-  }
-
   function openPreview() {
     let previewTab;
     if (activeTab?.endsWith(".html")) {
@@ -267,34 +232,8 @@
                 <Share2Icon size="20px" />
               </button>
             {/if}
-            {#if activeTab !== null && !activeTab.startsWith("preview:")}
-              <button
-                class="button"
-                title="More"
-                use:floatingRef
-                onclick={onShowActionsClick}
-              >
-                <EllipsisVerticalIcon size="20" />
-              </button>
-            {/if}
           </div>
         </div>
-
-        {#if showActions}
-          <div
-            class="actions"
-            role="menu"
-            tabindex="-1"
-            bind:this={actionsDiv}
-            use:floatingContent
-            onfocusout={onActionsFocusOut}
-          >
-            <button onclick={formatActiveTabContent}>
-              <CodeXmlIcon size="20" />
-              Format file
-            </button>
-          </div>
-        {/if}
 
         <div class="content">
           {#each tabsArray as tab (tab)}
@@ -380,46 +319,5 @@
 
   .header .button:active {
     background-color: #535a6d;
-  }
-
-  .actions {
-    position: fixed;
-    z-index: 1000;
-    width: max-content;
-    min-width: 150px;
-    border: 0.5px solid #3a3f4b;
-    display: flex;
-    flex-direction: column;
-    background-color: #1c1f27;
-  }
-
-  .actions button {
-    display: flex;
-    gap: 3px;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-    color: #abb2bf;
-    align-items: center;
-    background-color: transparent;
-    border-bottom: 0.1px solid #3a3f4b;
-  }
-
-  .actions button:hover {
-    color: #fff;
-    background-color: #454b5a;
-  }
-
-  .actions button:focus {
-    color: #fff;
-    outline-style: solid;
-    outline-offset: -2px;
-    outline-width: 0.5px;
-    outline-color: #61afef;
-  }
-
-  .actions button:active {
-    color: #fff;
-    background-color: #576073;
   }
 </style>

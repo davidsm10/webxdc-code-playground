@@ -56,9 +56,6 @@ importers:
       p-debounce:
         specifier: ^5.1.0
         version: 5.1.0
-      prettier:
-        specifier: ^3.7.4
-        version: 3.7.4
       svelte:
         specifier: ^5.43.5
         version: 5.43.6
@@ -84,9 +81,12 @@ importers:
       '@webxdc/vite-plugins':
         specifier: ^1.6.0
         version: 1.6.0(terser@5.44.1)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1))
+      prettier:
+        specifier: ^3.9.10
+        version: 3.9.10
       prettier-plugin-svelte:
         specifier: ^3.4.1
-        version: 3.4.1(prettier@3.7.4)(svelte@5.43.6)
+        version: 3.4.1(prettier@3.9.10)(svelte@5.43.6)
       svelte-check:
         specifier: ^4.3.3
         version: 4.3.4(picomatch@4.0.3)(svelte@5.43.6)(typescript@5.9.3)
@@ -2012,8 +2012,8 @@ packages:
       prettier: ^3.0.0
       svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
 
-  prettier@3.7.4:
-    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+  prettier@3.9.10:
+    resolution: {integrity: sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -4585,12 +4585,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prettier-plugin-svelte@3.4.1(prettier@3.7.4)(svelte@5.43.6):
+  prettier-plugin-svelte@3.4.1(prettier@3.9.10)(svelte@5.43.6):
     dependencies:
-      prettier: 3.7.4
+      prettier: 3.9.10
       svelte: 5.43.6
 
-  prettier@3.7.4: {}
+  prettier@3.9.10: {}
 
   pretty-bytes@5.6.0: {}
 

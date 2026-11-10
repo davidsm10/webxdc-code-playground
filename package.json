@@ -20,7 +20,7 @@
     "@vite-pwa/assets-generator": "^1.0.2",
     "@webxdc/types": "^2.2.0",
     "@webxdc/vite-plugins": "^1.6.0",
-    "prettier": "^3.7.4",
+    "prettier": "^3.9.10",
     "prettier-plugin-svelte": "^3.4.1",
     "svelte-check": "^4.3.3",
     "typescript": "~5.9.3",
@@ -44,7 +44,6 @@
     "localforage": "^1.10.0",
     "mrmime": "^2.0.1",
     "p-debounce": "^5.1.0",
-    "prettier": "^3.7.4",
     "svelte": "^5.43.5",
     "svelte-floating-ui": "^1.6.2"
   }
