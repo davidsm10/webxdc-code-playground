@@ -11,8 +11,6 @@
     PlayIcon,
     Share2Icon,
   } from "@lucide/svelte";
-  import { wrap } from "comlink";
-  import type { WorkerShape } from "@valtown/codemirror-ts/worker";
   import { generalDB, setupZenFSDB } from "../../dbs";
   import { createFloatingActions } from "svelte-floating-ui";
   import { offset } from "svelte-floating-ui/dom";
@@ -33,15 +31,6 @@
   let activeTab: string | null = $state(null);
 
   let editors: { [path: string]: Editor } = {};
-
-  const rawTypescriptWorker = new Worker(
-    new URL("../../typescript/worker.ts", import.meta.url),
-    {
-      type: "module",
-    },
-  );
-  const typescriptWorker = wrap<WorkerShape>(rawTypescriptWorker);
-  typescriptWorker.initialize();
 
   persistStorage();
   async function persistStorage() {
@@ -317,7 +306,6 @@
               {:else}
                 <Editor
                   path={tab}
-                  {typescriptWorker}
                   onDestroy={() => delete editors[tab]}
                   bind:this={editors[tab]}
                 />

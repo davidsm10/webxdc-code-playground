@@ -2,7 +2,6 @@
   import { EditorView } from "codemirror";
   import { onMount, onDestroy } from "svelte";
   import { generalExtensions, getLanguageExtensions } from "./extensions";
-  import { type WorkerShape } from "@valtown/codemirror-ts/worker";
   import { keymap } from "@codemirror/view";
   import { formatFile } from "../../prettier";
   import pDebounce from "p-debounce";
@@ -11,11 +10,9 @@
   let {
     path,
     onDestroy: onDestroyComp,
-    typescriptWorker,
   }: {
     path: string;
     onDestroy?: () => void;
-    typescriptWorker: WorkerShape;
   } = $props();
 
   // svelte-ignore non_reactive_update
@@ -88,7 +85,7 @@
       extensions: [
         generalExtensions,
         getFormatKeymap(),
-        getLanguageExtensions(path, typescriptWorker),
+        getLanguageExtensions(path),
       ],
       dispatchTransactions: (transactions) => {
         view.update(transactions);
