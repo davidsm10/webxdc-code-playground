@@ -20,6 +20,7 @@
   import { relative, isAbsolute, resolve } from "@zenfs/core/path";
   import type { FileRequest, FileResponse } from "../Preview/types";
   import eruda from "eruda?raw";
+  import { persistStorage } from "../../storage";
 
   // svelte-ignore non_reactive_update
   let tabs: Tabs;
@@ -29,22 +30,6 @@
   let editors: { [path: string]: Editor } = {};
 
   persistStorage();
-  async function persistStorage() {
-    if (navigator.storage && navigator.storage.persist) {
-      try {
-        const persisted = await navigator.storage.persist();
-        if (persisted) {
-          console.log("Storage persisted");
-        } else {
-          console.log("Storage no persisted");
-        }
-      } catch (err) {
-        console.log("Error persisting storage:", err);
-      }
-    } else {
-      console.log("Persistent storage not available");
-    }
-  }
 
   navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
   async function onServiceWorkerMessage(event: MessageEvent<FileRequest>) {
