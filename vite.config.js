@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
+import react from "@vitejs/plugin-react";
 import { buildXDC, mockWebxdc, eruda } from "@webxdc/vite-plugins";
 
 // https://vite.dev/config/
@@ -7,5 +7,5 @@ export default defineConfig({
   build: {
     outDir: "./dist-xdc",
   },
-  plugins: [svelte(), mockWebxdc(), eruda(), buildXDC({ inDir: "dist-xdc" })],
+  plugins: [react(), mockWebxdc(), eruda(), buildXDC({ inDir: "dist-xdc" })],
 });

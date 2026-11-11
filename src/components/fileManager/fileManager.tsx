@@ -1,8 +1,52 @@
+import Entry from "./entry/entry";
 import { readdir, readFile } from "@zenfs/core/promises";
-import type { Node } from "./types";
 import { resolve } from "@zenfs/core/path";
 import JSZip from "jszip";
 import { exportFile } from "../../util";
+
+const root: DirNode = {
+  name: "/",
+  path: "/",
+  type: "dir",
+};
+
+export default function FileManager(props: Events) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "auto",
+      }}
+    >
+      <Entry node={root} events={props} reloadParentFolder={() => false} />
+    </div>
+  );
+}
+
+export type Path = `/${string}`;
+
+interface BaseNode {
+  name: string;
+  path: Path;
+}
+
+export interface FileNode extends BaseNode {
+  type: "file";
+}
+
+export interface DirNode extends BaseNode {
+  type: "dir";
+}
+
+export type Node = FileNode | DirNode;
+
+export interface Events {
+  onCreated?: (node: Node) => void;
+  onRenamed?: (from: Node, to: Node) => void;
+  onDeleted?: (node: Node) => void;
+  onFileNodeClick?: (node: Node) => void;
+}
 
 export function sortNodes(a: Node, b: Node) {
   if (a.type !== b.type) {

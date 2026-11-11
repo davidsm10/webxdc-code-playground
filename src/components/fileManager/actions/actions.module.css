@@ -1,0 +1,68 @@
+.container {
+  height: 100%;
+  background-color: #1c1f27;
+}
+
+.container button {
+  cursor: pointer;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  border: none;
+  padding: 5px;
+}
+
+.container input {
+  border: none;
+  border-radius: 3px;
+  padding: 5px;
+  outline-style: none;
+}
+
+.actions {
+  border: 0.5px solid #3a3f4b;
+  display: flex;
+  flex-direction: column;
+}
+
+.newNodeForm {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 5px;
+}
+
+.newNodeForm button {
+  border-radius: 5px;
+  background-color: #3a3f4b;
+}
+
+.newNodeForm input {
+  background-color: #3a3f4b;
+}
+
+.actions button {
+  background: transparent;
+  color: #abb2bf;
+  border-bottom: 0.1px solid #3a3f4b;
+}
+
+.actions button:hover,
+.newNodeForm button:hover {
+  background-color: #454b5a;
+  color: #fff;
+}
+
+.actions button:focus,
+.newNodeForm button:focus {
+  outline-style: none;
+  background-color: #4b5263;
+  color: #fff;
+}
+
+.actions button:active,
+.newNodeForm button:active {
+  background-color: #576073;
+  color: #fff;
+}

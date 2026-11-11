@@ -1,0 +1,62 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.sideBar {
+  flex: 0 0 auto;
+  width: 300px;
+  max-width: 75%;
+  border-right: 0.5px solid #3a3f4b;
+}
+
+.main {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.header {
+  height: 40px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  background-color: #21242b;
+}
+
+.content {
+  height: calc(100% - 45px);
+}
+
+.panelRight,
+.panelLeft {
+  height: 100%;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.header .button {
+  height: 80%;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #abb2bf;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.header .button:hover,
+.header .button:focus {
+  background-color: #3a3f4b;
+  outline-style: none;
+}
+
+.header .button:active {
+  background-color: #535a6d;
+}

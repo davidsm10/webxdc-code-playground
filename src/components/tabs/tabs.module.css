@@ -1,0 +1,78 @@
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.tabs {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.tab {
+  color: #7d8799;
+  background-color: #21252b;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  border-right: 0.5px solid #3a3f4b;
+  flex: 0 0 auto;
+}
+
+.tab:first-child {
+  border-left: 0.5px solid #3a3f4b;
+}
+
+.tab.active,
+.tab.active:focus {
+  background-color: #282c34;
+  color: #abb2bf;
+  outline-style: none;
+  border-top: 2px solid #61afef;
+}
+
+.tab:hover {
+  background-color: #3a3f4b;
+}
+
+.tab:focus {
+  outline-style: solid;
+  outline-offset: -2px;
+  outline-width: 0.5px;
+  outline-color: #61afef;
+}
+
+.tab button {
+  color: #7d8799;
+  background-color: #2e323c;
+  border: none;
+  border-radius: 3px;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tab button:hover {
+  color: #fff;
+  background-color: #464c5c;
+}
+
+.tab button:focus {
+  outline-style: solid;
+  outline-width: 0.5px;
+  outline-color: #61afef;
+}
+
+.tab button:active {
+  color: #fff;
+  background-color: #535a6d;
+}

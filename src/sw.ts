@@ -1,6 +1,6 @@
 import { appAssetsDB } from "./storage";
 import { lookup } from "mrmime";
-import type { FileResponse } from "./components/Preview/types";
+import type { FileResponse } from "./components/preview";
 
 declare let self: ServiceWorkerGlobalScope;
 
