@@ -92,7 +92,7 @@ export default function Tabs(props: {
       {tabs?.map((tab) => (
         <div
           key={tab}
-          className={`${classes.tab} ${tab === activeTab ? classes.active : ""} ${classes["no-select"]}`}
+          className={`${classes.tab} ${tab === activeTab ? classes.active : ""} no-select`}
           role="button"
           tabIndex={0}
           onClick={() => setActiveTab(tab)}
