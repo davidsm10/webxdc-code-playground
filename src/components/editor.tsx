@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { basicSetup, EditorView } from "codemirror";
 import pDebounce from "p-debounce";
 import { readFile, writeFile } from "@zenfs/core/promises";
@@ -62,28 +62,24 @@ export default function Editor(props: {
   onDestroy: () => void;
 }) {
   const container = useRef(null);
-  const [editorView, setEditorView] = useState<EditorView>();
+  const editorView = useRef<EditorView>(null);
 
   useEffect(() => {
     const loadEditor = async () => {
       const content = await readFile(props.path, { encoding: "utf-8" });
-      const editorView = createEditorView(
-        content,
-        container.current!,
-        props.path,
-      );
-      editorView.contentDOM.setAttribute("spellcheck", "false");
-      editorView.contentDOM.setAttribute("autocorrect", "off");
-      editorView.contentDOM.setAttribute("autocapitalize", "off");
-      editorView.contentDOM.setAttribute("autocomplete", "off");
-      setEditorView(editorView);
-      props.onMount(editorView);
+      const view = createEditorView(content, container.current!, props.path);
+      view.contentDOM.setAttribute("spellcheck", "false");
+      view.contentDOM.setAttribute("autocorrect", "off");
+      view.contentDOM.setAttribute("autocapitalize", "off");
+      view.contentDOM.setAttribute("autocomplete", "off");
+      editorView.current = view;
+      props.onMount(view);
     };
 
     loadEditor();
 
     return () => {
-      editorView?.destroy();
+      editorView.current?.destroy();
       props.onDestroy();
     };
   }, []);
