@@ -7,6 +7,7 @@ import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { json } from "@codemirror/lang-json";
 import { javascript } from "@codemirror/lang-javascript";
+import { lspClients } from "../lsp/client";
 
 const generalExtensions = [
   basicSetup,
@@ -21,11 +22,11 @@ const generalExtensions = [
 function getLanguageExtensions(path: string) {
   let extensions = [];
   if (path.endsWith(".html")) {
-    extensions.push(html());
+    extensions.push(html(), lspClients.html.plugin(`file://${path}`));
   } else if (path.endsWith(".css")) {
-    extensions.push(css());
+    extensions.push(css(), lspClients.css.plugin(`file://${path}`));
   } else if (path.endsWith(".json")) {
-    extensions.push(json());
+    extensions.push(json(), lspClients.json.plugin(`file://${path}`));
   } else if (path.endsWith(".js")) {
     extensions.push(javascript());
   }
