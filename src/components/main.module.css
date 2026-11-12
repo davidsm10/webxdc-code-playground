@@ -21,7 +21,7 @@
   height: 40px;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   background-color: #21242b;
 }
