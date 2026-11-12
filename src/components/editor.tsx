@@ -3,11 +3,29 @@ import { basicSetup, EditorView } from "codemirror";
 import pDebounce from "p-debounce";
 import { readFile, writeFile } from "@zenfs/core/promises";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { html } from "@codemirror/lang-html";
-import { css } from "@codemirror/lang-css";
-import { json } from "@codemirror/lang-json";
+import { LanguageSupport } from "@codemirror/language";
+import { htmlLanguage, autoCloseTags } from "@codemirror/lang-html";
+import { css, cssLanguage } from "@codemirror/lang-css";
+import { jsonLanguage } from "@codemirror/lang-json";
 import { javascript } from "@codemirror/lang-javascript";
 import { lspClients } from "../lsp/client";
+
+function htmlExtension(uri: string) {
+  return new LanguageSupport(htmlLanguage, [
+    autoCloseTags,
+    lspClients.html.plugin(uri),
+    css().support,
+    javascript().support,
+  ]);
+}
+
+function cssExtension(uri: string) {
+  return new LanguageSupport(cssLanguage, [lspClients.css.plugin(uri)]);
+}
+
+function jsonExtension(uri: string) {
+  return new LanguageSupport(jsonLanguage, [lspClients.json.plugin(uri)]);
+}
 
 const generalExtensions = [
   basicSetup,
@@ -22,11 +40,11 @@ const generalExtensions = [
 function getLanguageExtensions(path: string) {
   let extensions = [];
   if (path.endsWith(".html")) {
-    extensions.push(html(), lspClients.html.plugin(`file://${path}`));
+    extensions.push(htmlExtension(`file://${path}`));
   } else if (path.endsWith(".css")) {
-    extensions.push(css(), lspClients.css.plugin(`file://${path}`));
+    extensions.push(cssExtension(`file://${path}`));
   } else if (path.endsWith(".json")) {
-    extensions.push(json(), lspClients.json.plugin(`file://${path}`));
+    extensions.push(jsonExtension(`file://${path}`));
   } else if (path.endsWith(".js")) {
     extensions.push(javascript());
   }

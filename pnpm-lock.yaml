@@ -20,6 +20,9 @@ importers:
       '@codemirror/lang-json':
         specifier: ^6.0.2
         version: 6.0.2
+      '@codemirror/language':
+        specifier: ^6.13.1
+        version: 6.13.1
       '@codemirror/lsp-client':
         specifier: ^6.3.0
         version: 6.3.0
