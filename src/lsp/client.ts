@@ -6,6 +6,7 @@ import {
 import htmlWorker from "../lsp/html?worker&url";
 import cssWorker from "../lsp/css?worker&url";
 import jsonWorker from "../lsp/json?worker&url";
+import javascriptWorker from "../lsp/javascript/javascript?worker&url";
 
 function getLspTransport(worker: Worker): Transport {
   let handlers: ((message: string) => void)[] = [];
@@ -49,4 +50,5 @@ export const lspClients = {
   html: loadLspClient(htmlWorker),
   css: loadLspClient(cssWorker),
   json: loadLspClient(jsonWorker),
+  javascript: loadLspClient(javascriptWorker),
 };

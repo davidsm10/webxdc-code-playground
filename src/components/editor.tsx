@@ -7,7 +7,12 @@ import { LanguageSupport } from "@codemirror/language";
 import { htmlLanguage, autoCloseTags } from "@codemirror/lang-html";
 import { css, cssLanguage } from "@codemirror/lang-css";
 import { jsonLanguage } from "@codemirror/lang-json";
-import { javascript } from "@codemirror/lang-javascript";
+import {
+  javascript,
+  javascriptLanguage,
+  snippets,
+} from "@codemirror/lang-javascript";
+import { completeFromList, ifNotIn } from "@codemirror/autocomplete";
 import { lspClients } from "../lsp/client";
 
 function htmlExtension(uri: string) {
@@ -25,6 +30,48 @@ function cssExtension(uri: string) {
 
 function jsonExtension(uri: string) {
   return new LanguageSupport(jsonLanguage, [lspClients.json.plugin(uri)]);
+}
+
+function javascriptExtension(uri: string) {
+  return new LanguageSupport(javascriptLanguage, [
+    jsSnippetsCompletion(),
+    lspClients.javascript.plugin(uri),
+  ]);
+}
+
+function jsSnippetsCompletion() {
+  let kwCompletion = (name: string) => ({ label: name, type: "keyword" });
+  const keywords =
+    "break case const continue default delete export extends false finally in instanceof let new return static super switch this throw true typeof var yield"
+      .split(" ")
+      .map(kwCompletion);
+
+  const dontComplete = [
+    "TemplateString",
+    "String",
+    "RegExp",
+    "LineComment",
+    "BlockComment",
+    "VariableDefinition",
+    "TypeDefinition",
+    "Label",
+    "PropertyDefinition",
+    "PropertyName",
+    "PrivatePropertyDefinition",
+    "PrivatePropertyName",
+    "JSXText",
+    "JSXAttributeValue",
+    "JSXOpenTag",
+    "JSXCloseTag",
+    "JSXSelfClosingTag",
+    ".",
+    "?.",
+  ];
+
+  let completions = snippets.concat(keywords);
+  return javascriptLanguage.data.of({
+    autocomplete: ifNotIn(dontComplete, completeFromList(completions)),
+  });
 }
 
 const generalExtensions = [
@@ -46,7 +93,7 @@ function getLanguageExtensions(path: string) {
   } else if (path.endsWith(".json")) {
     extensions.push(jsonExtension(`file://${path}`));
   } else if (path.endsWith(".js")) {
-    extensions.push(javascript());
+    extensions.push(javascriptExtension(`file://${path}`));
   }
 
   return extensions;
