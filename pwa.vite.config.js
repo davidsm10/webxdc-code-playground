@@ -12,7 +12,7 @@ export default defineConfig({
     react(),
     VitePWA({
       manifest: {
-        name: "Code Playground",
+        name: "Web Playground",
         short_name: "Playground",
         background_color: "#282c34",
         theme_color: "#282c34",
