@@ -128,12 +128,15 @@ class HtmlLsp {
 const reader = new CustomMessageReader();
 self.addEventListener("message", (event: MessageEvent<ClientMessage>) => {
   if (event.data.type === "client-lsp") {
-    reader.writeMessage(event.data.message);
+    reader.writeMessage(JSON.parse(event.data.message));
   }
 });
 
 const writer = new CustomMessageWriter((message) => {
-  self.postMessage({ type: "server-lsp", message } as ServerLspMessage);
+  self.postMessage({
+    type: "server-lsp",
+    message: JSON.stringify(message),
+  } as ServerLspMessage);
 });
 
 new HtmlLsp(reader, writer);

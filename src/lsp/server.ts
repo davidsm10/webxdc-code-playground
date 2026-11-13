@@ -10,7 +10,7 @@ import {
 
 export interface ServerLspMessage {
   type: "server-lsp";
-  message: any;
+  message: string;
 }
 
 export type ServerMessage = ServerLspMessage;
