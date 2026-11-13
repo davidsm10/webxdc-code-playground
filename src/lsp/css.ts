@@ -14,7 +14,12 @@ import {
   MessageReader,
   MessageWriter,
 } from "vscode-languageserver/browser";
-import { CustomMessageReader, CustomMessageWriter } from "./server";
+import {
+  CustomMessageReader,
+  CustomMessageWriter,
+  type ServerLspMessage,
+} from "./server";
+import type { ClientMessage } from "./client";
 
 declare let self: Worker;
 
@@ -135,12 +140,14 @@ class CssLsp {
 }
 
 const reader = new CustomMessageReader();
-self.addEventListener("message", (event) => {
-  reader.writeMessage(event.data);
+self.addEventListener("message", (event: MessageEvent<ClientMessage>) => {
+  if (event.data.type === "client-lsp") {
+    reader.writeMessage(event.data.message);
+  }
 });
 
 const writer = new CustomMessageWriter((message) => {
-  self.postMessage(message);
+  self.postMessage({ type: "server-lsp", message } as ServerLspMessage);
 });
 
 new CssLsp(reader, writer);

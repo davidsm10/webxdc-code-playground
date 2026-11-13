@@ -8,6 +8,13 @@ import {
   type MessageReader,
 } from "vscode-languageserver";
 
+export interface ServerLspMessage {
+  type: "server-lsp";
+  message: any;
+}
+
+export type ServerMessage = ServerLspMessage;
+
 export class CustomMessageReader
   extends AbstractMessageReader
   implements MessageReader

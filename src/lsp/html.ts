@@ -14,7 +14,12 @@ import {
   type HTMLDocument,
   type LanguageService,
 } from "vscode-html-languageservice";
-import { CustomMessageReader, CustomMessageWriter } from "./server";
+import {
+  CustomMessageReader,
+  CustomMessageWriter,
+  type ServerLspMessage,
+} from "./server";
+import type { ClientMessage } from "./client";
 
 declare let self: Worker;
 
@@ -121,12 +126,14 @@ class HtmlLsp {
 }
 
 const reader = new CustomMessageReader();
-self.addEventListener("message", (event) => {
-  reader.writeMessage(event.data);
+self.addEventListener("message", (event: MessageEvent<ClientMessage>) => {
+  if (event.data.type === "client-lsp") {
+    reader.writeMessage(event.data.message);
+  }
 });
 
 const writer = new CustomMessageWriter((message) => {
-  self.postMessage(message);
+  self.postMessage({ type: "server-lsp", message } as ServerLspMessage);
 });
 
 new HtmlLsp(reader, writer);

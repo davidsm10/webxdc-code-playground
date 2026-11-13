@@ -13,7 +13,12 @@ import JavascriptLanguageService from "./service";
 import TypescriptHost from "./typescriptHost";
 import ts, { ScriptTarget } from "typescript";
 import { webxdcTypes } from "./webxdcTypes";
-import { CustomMessageReader, CustomMessageWriter } from "../server";
+import {
+  CustomMessageReader,
+  CustomMessageWriter,
+  type ServerLspMessage,
+} from "../server";
+import type { ClientMessage } from "../client";
 
 declare let self: Worker;
 
@@ -130,12 +135,14 @@ class JavascriptLsp {
 }
 
 const reader = new CustomMessageReader();
-self.addEventListener("message", (event) => {
-  reader.writeMessage(event.data);
+self.addEventListener("message", (event: MessageEvent<ClientMessage>) => {
+  if (event.data.type === "client-lsp") {
+    reader.writeMessage(event.data.message);
+  }
 });
 
 const writer = new CustomMessageWriter((message) => {
-  self.postMessage(message);
+  self.postMessage({ type: "server-lsp", message } as ServerLspMessage);
 });
 
 new JavascriptLsp(reader, writer);

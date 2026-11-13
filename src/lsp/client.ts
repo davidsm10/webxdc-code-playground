@@ -7,17 +7,30 @@ import htmlWorker from "../lsp/html?worker&url";
 import cssWorker from "../lsp/css?worker&url";
 import jsonWorker from "../lsp/json?worker&url";
 import javascriptWorker from "../lsp/javascript/javascript?worker&url";
+import type { ServerMessage } from "./server";
+
+export interface ClientLspMessage {
+  type: "client-lsp";
+  message: any;
+}
+
+export type ClientMessage = ClientLspMessage;
 
 function getLspTransport(worker: Worker): Transport {
   let handlers: ((message: string) => void)[] = [];
-  worker.onmessage = (event) => {
-    for (const handler of handlers) {
-      handler(JSON.stringify(event.data));
+  worker.onmessage = (event: MessageEvent<ServerMessage>) => {
+    if (event.data.type === "server-lsp") {
+      for (const handler of handlers) {
+        handler(JSON.stringify(event.data.message));
+      }
     }
   };
   return {
     send(message) {
-      worker.postMessage(JSON.parse(message));
+      worker.postMessage({
+        type: "client-lsp",
+        message: JSON.parse(message),
+      } as ClientLspMessage);
     },
     subscribe(handler) {
       handlers.push(handler);
