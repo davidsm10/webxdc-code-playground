@@ -9,11 +9,12 @@ import {
   ProposedFeatures,
   TextDocuments,
   type Connection,
-  BrowserMessageReader,
-  BrowserMessageWriter,
   TextDocumentSyncKind,
   type ServerCapabilities,
+  MessageReader,
+  MessageWriter,
 } from "vscode-languageserver/browser";
+import { CustomMessageReader, CustomMessageWriter } from "./server";
 
 declare let self: Worker;
 
@@ -35,12 +36,10 @@ class JsonLsp {
   service: LanguageService;
   cachedParsedDocuments: Map<string, CachedParsedDocument>;
 
-  constructor() {
+  constructor(reader: MessageReader, writer: MessageWriter) {
     this.documents = new TextDocuments(TextDocument);
     this.service = getLanguageService({});
     this.cachedParsedDocuments = new Map();
-    const reader = new BrowserMessageReader(self);
-    const writer = new BrowserMessageWriter(self);
     this.connection = createConnection(ProposedFeatures.all, reader, writer);
     this.setupListeners();
     this.documents.listen(this.connection);
@@ -117,4 +116,13 @@ class JsonLsp {
   }
 }
 
-new JsonLsp();
+const reader = new CustomMessageReader();
+self.addEventListener("message", (event) => {
+  reader.writeMessage(event.data);
+});
+
+const writer = new CustomMessageWriter((message) => {
+  self.postMessage(message);
+});
+
+new JsonLsp(reader, writer);

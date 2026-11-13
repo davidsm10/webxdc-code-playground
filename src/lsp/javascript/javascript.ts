@@ -1,7 +1,7 @@
 import {
-  BrowserMessageReader,
-  BrowserMessageWriter,
   createConnection,
+  MessageReader,
+  MessageWriter,
   ProposedFeatures,
   TextDocuments,
   TextDocumentSyncKind,
@@ -13,6 +13,7 @@ import JavascriptLanguageService from "./service";
 import TypescriptHost from "./typescriptHost";
 import ts, { ScriptTarget } from "typescript";
 import { webxdcTypes } from "./webxdcTypes";
+import { CustomMessageReader, CustomMessageWriter } from "../server";
 
 declare let self: Worker;
 
@@ -35,7 +36,7 @@ class JavascriptLsp {
   connection: Connection;
   service: JavascriptLanguageService;
 
-  constructor() {
+  constructor(reader: MessageReader, writer: MessageWriter) {
     this.projectVersion = 0;
     this.documents = new TextDocuments(TextDocument);
 
@@ -62,8 +63,6 @@ class JavascriptLsp {
     );
     this.service = new JavascriptLanguageService(typescriptService);
 
-    const reader = new BrowserMessageReader(self);
-    const writer = new BrowserMessageWriter(self);
     this.connection = createConnection(ProposedFeatures.all, reader, writer);
     this.setupListeners();
     this.documents.listen(this.connection);
@@ -130,4 +129,13 @@ class JavascriptLsp {
   }
 }
 
-new JavascriptLsp();
+const reader = new CustomMessageReader();
+self.addEventListener("message", (event) => {
+  reader.writeMessage(event.data);
+});
+
+const writer = new CustomMessageWriter((message) => {
+  self.postMessage(message);
+});
+
+new JavascriptLsp(reader, writer);

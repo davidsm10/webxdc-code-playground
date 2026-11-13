@@ -1,12 +1,12 @@
 import {
   TextDocuments,
   type Connection,
-  BrowserMessageReader,
-  BrowserMessageWriter,
   createConnection,
   ProposedFeatures,
   type ServerCapabilities,
   TextDocumentSyncKind,
+  MessageWriter,
+  MessageReader,
 } from "vscode-languageserver/browser";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import {
@@ -14,6 +14,7 @@ import {
   type HTMLDocument,
   type LanguageService,
 } from "vscode-html-languageservice";
+import { CustomMessageReader, CustomMessageWriter } from "./server";
 
 declare let self: Worker;
 
@@ -50,12 +51,10 @@ class HtmlLsp {
   service: LanguageService;
   connection: Connection;
 
-  constructor() {
+  constructor(reader: MessageReader, writer: MessageWriter) {
     this.documents = new TextDocuments(TextDocument);
     this.cachedParsedDocuments = new Map();
     this.service = getLanguageService();
-    const reader = new BrowserMessageReader(self);
-    const writer = new BrowserMessageWriter(self);
     this.connection = createConnection(ProposedFeatures.all, reader, writer);
     this.setupListeners();
     this.documents.listen(this.connection);
@@ -121,4 +120,13 @@ class HtmlLsp {
   }
 }
 
-new HtmlLsp();
+const reader = new CustomMessageReader();
+self.addEventListener("message", (event) => {
+  reader.writeMessage(event.data);
+});
+
+const writer = new CustomMessageWriter((message) => {
+  self.postMessage(message);
+});
+
+new HtmlLsp(reader, writer);
