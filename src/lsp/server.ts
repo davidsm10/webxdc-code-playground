@@ -13,7 +13,11 @@ export interface ServerLspMessage {
   message: string;
 }
 
-export type ServerMessage = ServerLspMessage;
+export interface ServerReadyMessage {
+  type: "server-ready";
+}
+
+export type ServerMessage = ServerLspMessage | ServerReadyMessage;
 
 export class CustomMessageReader
   extends AbstractMessageReader

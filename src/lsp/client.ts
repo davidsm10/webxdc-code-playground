@@ -41,20 +41,23 @@ function getLspTransport(worker: Worker): Transport {
   };
 }
 
-function getLspClient(worker: Worker) {
-  const transport = getLspTransport(worker);
-  const client = new LSPClient({
-    extensions: languageServerExtensions(),
-  }).connect(transport);
-
-  return client;
-}
-
 function loadLspClient(workerPath: string) {
   const worker = new Worker(workerPath, {
     type: "module",
   });
-  const client = getLspClient(worker);
+  const client = new LSPClient({
+    extensions: languageServerExtensions(),
+  });
+
+  const onWorkerMessage = (event: MessageEvent<ServerMessage>) => {
+    if (event.data.type === "server-ready") {
+      worker.removeEventListener("message", onWorkerMessage);
+      const transport = getLspTransport(worker);
+      client.connect(transport);
+    }
+  };
+
+  worker.addEventListener("message", onWorkerMessage);
 
   return client;
 }

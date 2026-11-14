@@ -18,6 +18,7 @@ import {
   CustomMessageReader,
   CustomMessageWriter,
   type ServerLspMessage,
+  type ServerReadyMessage,
 } from "./server";
 import type { ClientMessage } from "./client";
 
@@ -136,3 +137,4 @@ const writer = new CustomMessageWriter((message) => {
 });
 
 new JsonLsp(reader, writer);
+self.postMessage({ type: "server-ready" } as ServerReadyMessage);
